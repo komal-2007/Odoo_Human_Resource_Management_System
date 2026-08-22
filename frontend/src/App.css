@@ -1,0 +1,848 @@
+/* =====================================================
+   GLOBAL
+===================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  background: #111111;
+  color: #eeeeee;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+input {
+  font-family: inherit;
+}
+
+
+/* =====================================================
+   APP
+===================================================== */
+
+.app {
+  min-height: 100vh;
+  background: #111111;
+  color: #eeeeee;
+}
+
+
+/* =====================================================
+   TOP NAVIGATION
+===================================================== */
+
+.top-navbar {
+  width: 100%;
+  height: 58px;
+
+  border-bottom: 1px solid #666666;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 16px;
+
+  background: #111111;
+}
+
+
+/* Company Logo */
+
+.company-logo {
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  min-width: 130px;
+
+  color: #eeeeee;
+
+  font-size: 12px;
+}
+
+.logo-mark {
+  width: 27px;
+  height: 27px;
+
+  border: 1px solid #aaaaaa;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 12px;
+}
+
+
+/* Navigation */
+
+.navigation {
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+}
+
+.nav-link {
+  height: 100%;
+
+  padding: 0 16px;
+
+  border: none;
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
+
+  background: transparent;
+
+  color: #bdbdbd;
+
+  font-size: 12px;
+
+  cursor: pointer;
+}
+
+.nav-link:hover {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+.nav-link.active {
+  background: #27658a;
+
+  color: #ffffff;
+
+  border-left-color: #777777;
+  border-right-color: #777777;
+}
+
+
+/* Profile */
+
+.profile-area {
+  margin-left: auto;
+
+  position: relative;
+
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+}
+
+.profile-avatar {
+  width: 31px;
+  height: 31px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #ed6b6b;
+
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.profile-avatar:hover {
+  opacity: 0.85;
+}
+
+
+/* =====================================================
+   PROFILE DROPDOWN
+===================================================== */
+
+.profile-dropdown {
+  position: absolute;
+
+  top: 49px;
+  right: 0;
+
+  width: 155px;
+
+  border: 1px solid #4e4e4e;
+
+  background: #111111;
+
+  z-index: 100;
+
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+.profile-dropdown button {
+  width: 100%;
+
+  padding: 15px;
+
+  background: transparent;
+
+  border: none;
+
+  border-bottom: 1px solid #383838;
+
+  color: #dddddd;
+
+  text-align: left;
+
+  font-size: 12px;
+
+  cursor: pointer;
+}
+
+.profile-dropdown button:last-child {
+  border-bottom: none;
+}
+
+.profile-dropdown button:hover {
+  background: #1d1d1d;
+  color: #ffffff;
+}
+
+
+/* =====================================================
+   MAIN WRAPPER
+===================================================== */
+
+.main-wrapper {
+  width: 100%;
+
+  max-width: 1050px;
+
+  margin: 0 auto;
+
+  padding: 20px 25px 50px;
+}
+
+
+/* =====================================================
+   TOOLBAR
+===================================================== */
+
+.toolbar {
+  width: 100%;
+  height: 45px;
+
+  border: 1px solid #686868;
+
+  display: flex;
+  align-items: center;
+
+  padding: 6px;
+
+  margin-bottom: 3px;
+
+  background: #111111;
+}
+
+
+/* NEW */
+
+.new-button {
+  height: 30px;
+
+  min-width: 65px;
+
+  padding: 0 15px;
+
+  background: #8c4ca7;
+
+  border: none;
+
+  color: #ffffff;
+
+  font-size: 11px;
+
+  cursor: pointer;
+}
+
+.new-button:hover {
+  background: #a35bc0;
+}
+
+
+/* Search */
+
+.search-wrapper {
+  margin-left: auto;
+
+  width: 245px;
+
+  height: 30px;
+}
+
+.search-wrapper input {
+  width: 100%;
+  height: 100%;
+
+  background: #111111;
+
+  border: 1px solid #666666;
+
+  outline: none;
+
+  color: #eeeeee;
+
+  padding: 0 12px;
+
+  font-size: 11px;
+
+  text-align: center;
+}
+
+.search-wrapper input:focus {
+  border-color: #aaaaaa;
+}
+
+.search-wrapper input::placeholder {
+  color: #777777;
+}
+
+
+/* =====================================================
+   EMPLOYEE GRID
+===================================================== */
+
+.employee-grid {
+  width: 100%;
+
+  border-left: 1px solid #686868;
+  border-right: 1px solid #686868;
+  border-bottom: 1px solid #686868;
+
+  padding: 12px 12px 20px;
+
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 17px 35px;
+
+  background: #111111;
+}
+
+
+/* =====================================================
+   EMPLOYEE CARD
+===================================================== */
+
+.employee-card {
+  position: relative;
+
+  height: 108px;
+
+  background: #111111;
+
+  border: 1px solid #8a8a8a;
+
+  color: #ffffff;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  transition: background 0.15s ease;
+}
+
+.employee-card:hover {
+  background: #181818;
+
+  border-color: #bcbcbc;
+}
+
+
+/* Status top-right */
+
+.card-status {
+  position: absolute;
+
+  right: 5px;
+  top: 5px;
+
+  z-index: 2;
+}
+
+
+/* Status dot */
+
+.status-dot {
+  display: inline-block;
+
+  width: 11px;
+  height: 11px;
+
+  border-radius: 50%;
+
+  border: 1px solid #888888;
+}
+
+.status-dot.present {
+  background: #4caf50;
+}
+
+.status-dot.leave {
+  background: #4f8bd6;
+}
+
+.status-dot.absent {
+  background: #e6b83c;
+}
+
+
+/* =====================================================
+   EMPLOYEE IMAGE
+===================================================== */
+
+.employee-image {
+  position: absolute;
+
+  left: 8px;
+  top: 8px;
+
+  width: 48px;
+  height: 48px;
+
+  border: 1px solid #999999;
+
+  background: #d8e8f5;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* Simple person icon */
+
+.person-icon {
+  width: 30px;
+  height: 34px;
+
+  position: relative;
+}
+
+.person-head {
+  position: absolute;
+
+  top: 1px;
+  left: 10px;
+
+  width: 11px;
+  height: 11px;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  border: 1px solid #bbbbbb;
+}
+
+.person-body {
+  position: absolute;
+
+  bottom: 1px;
+  left: 5px;
+
+  width: 21px;
+  height: 18px;
+
+  border-radius: 10px 10px 2px 2px;
+
+  background: #ffffff;
+
+  border: 1px solid #bbbbbb;
+}
+
+
+/* Employee Name */
+
+.employee-name {
+  position: absolute;
+
+  left: 8px;
+  bottom: 9px;
+
+  max-width: calc(100% - 16px);
+
+  overflow: hidden;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  color: #dddddd;
+
+  font-size: 10px;
+}
+
+
+/* =====================================================
+   SETTINGS
+===================================================== */
+
+.settings-text {
+  margin-top: 3px;
+
+  color: #777777;
+
+  font-size: 11px;
+}
+
+
+/* =====================================================
+   EMPLOYEE DETAILS
+===================================================== */
+
+.details-page {
+  width: 100%;
+}
+
+.back-button {
+  border: 1px solid #666666;
+
+  background: #111111;
+
+  color: #bbbbbb;
+
+  padding: 8px 13px;
+
+  font-size: 11px;
+
+  cursor: pointer;
+
+  margin-bottom: 15px;
+}
+
+.back-button:hover {
+  color: #ffffff;
+  border-color: #999999;
+}
+
+.details-card {
+  border: 1px solid #686868;
+
+  background: #111111;
+
+  min-height: 300px;
+
+  padding: 30px;
+
+  display: flex;
+
+  gap: 30px;
+}
+
+.details-avatar {
+  width: 120px;
+  height: 120px;
+
+  border: 1px solid #888888;
+
+  background: #d8e8f5;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+}
+
+.person-icon.large {
+  transform: scale(2);
+}
+
+.profile-big-avatar {
+  width: 80px;
+  height: 80px;
+
+  border-radius: 50%;
+
+  background: #ed6b6b;
+
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 26px;
+  font-weight: bold;
+}
+
+.details-content {
+  flex: 1;
+}
+
+.details-title {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: flex-start;
+
+  border-bottom: 1px solid #444444;
+
+  padding-bottom: 20px;
+
+  margin-bottom: 20px;
+}
+
+.details-title h1 {
+  font-size: 21px;
+
+  font-weight: normal;
+
+  color: #eeeeee;
+
+  margin-bottom: 6px;
+}
+
+.details-title p {
+  color: #888888;
+
+  font-size: 12px;
+}
+
+.detail-status {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  font-size: 11px;
+
+  color: #aaaaaa;
+}
+
+.information-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 25px;
+}
+
+.information-grid label {
+  display: block;
+
+  color: #777777;
+
+  font-size: 10px;
+
+  margin-bottom: 6px;
+}
+
+.information-grid p {
+  color: #dddddd;
+
+  font-size: 12px;
+}
+
+
+/* =====================================================
+   ATTENDANCE
+===================================================== */
+
+.attendance-page,
+.timeoff-page {
+  width: 100%;
+}
+
+.page-heading {
+  border: 1px solid #686868;
+
+  padding: 20px;
+
+  margin-bottom: 15px;
+}
+
+.page-heading h1 {
+  font-size: 20px;
+
+  font-weight: normal;
+
+  margin-bottom: 7px;
+}
+
+.page-heading p {
+  color: #888888;
+
+  font-size: 12px;
+}
+
+.attendance-actions {
+  display: flex;
+
+  gap: 20px;
+}
+
+.attendance-box {
+  width: 180px;
+
+  min-height: 120px;
+
+  border: 1px solid #686868;
+
+  padding: 15px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: space-between;
+
+  background: #111111;
+}
+
+.attendance-label,
+.since-text {
+  color: #aaaaaa;
+
+  font-size: 10px;
+}
+
+.check-button {
+  width: 100%;
+
+  height: 32px;
+
+  border: 1px solid #999999;
+
+  background: #111111;
+
+  color: #dddddd;
+
+  font-size: 10px;
+
+  cursor: pointer;
+}
+
+.check-button:hover {
+  background: #222222;
+
+  border-color: #ffffff;
+
+  color: #ffffff;
+}
+
+
+/* =====================================================
+   TIME OFF
+===================================================== */
+
+.timeoff-card {
+  border: 1px solid #686868;
+
+  padding: 25px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+}
+
+.timeoff-card div {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.timeoff-card span {
+  color: #777777;
+
+  font-size: 11px;
+}
+
+.timeoff-card strong {
+  color: #eeeeee;
+
+  font-size: 20px;
+  font-weight: normal;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 750px) {
+
+  .top-navbar {
+    padding: 0 8px;
+  }
+
+  .company-logo {
+    min-width: 85px;
+  }
+
+  .company-logo span {
+    display: none;
+  }
+
+  .nav-link {
+    padding: 0 9px;
+
+    font-size: 10px;
+  }
+
+  .main-wrapper {
+    padding: 15px 10px;
+  }
+
+  .employee-grid {
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 12px;
+  }
+
+  .search-wrapper {
+    width: 150px;
+  }
+
+  .details-card {
+    flex-direction: column;
+  }
+
+  .information-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .attendance-actions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 450px) {
+
+  .employee-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .search-wrapper {
+    width: 120px;
+  }
+}
