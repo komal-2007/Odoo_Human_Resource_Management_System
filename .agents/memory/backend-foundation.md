@@ -8,3 +8,9 @@ Dayflow uses Prisma with PostgreSQL as the source of truth for persistence. The 
 **Why:** The project explicitly requested a beginner-friendly Node/Express/PostgreSQL/Prisma stack and asked to defer full feature implementation.
 
 **How to apply:** Keep future API work behind the existing `/api` mount, use the shared Prisma client, and update the OpenAPI contract before adding client-facing endpoints.
+
+Authentication is Admin-created only: employees do not self-register, and JWT payloads carry the user ID and role. Initial employee passwords are returned only in the creation response and are stored as bcrypt hashes.
+
+**Why:** HR controls account provisioning and employees must be restricted to their own protected data.
+
+**How to apply:** Use `requireAuth` for protected routes and `requireRole("ADMIN")` for HR management routes; never include password hashes in responses.
