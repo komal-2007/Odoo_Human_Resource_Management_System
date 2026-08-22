@@ -1,0 +1,1159 @@
+/* =====================================================
+   GLOBAL
+===================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+
+  background: #0d0d0d;
+  color: #ffffff;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+.dashboard {
+  min-height: 100vh;
+
+  background: #0d0d0d;
+
+  color: #ffffff;
+}
+
+
+/* =====================================================
+   TOP NAVBAR
+===================================================== */
+
+.top-navbar {
+  height: 60px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 28px;
+
+  background: #151515;
+
+  border-bottom: 1px solid #333333;
+}
+
+
+/* =====================================================
+   COMPANY LOGO
+===================================================== */
+
+.company-logo {
+  width: 180px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  font-size: 17px;
+
+  font-weight: 600;
+
+  color: #ffffff;
+}
+
+.logo-box {
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 6px;
+
+  background: #ff4f9a;
+
+  color: #ffffff;
+
+  font-weight: bold;
+
+  box-shadow: 0 0 10px rgba(255, 79, 154, 0.25);
+}
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+.navigation {
+  height: 100%;
+
+  display: flex;
+}
+
+.nav-link {
+  height: 100%;
+
+  padding: 0 22px;
+
+  border: none;
+
+  border-bottom: 3px solid transparent;
+
+  background: transparent;
+
+  color: #aaaaaa;
+
+  font-size: 14px;
+}
+
+.nav-link:hover {
+  background: #1d1d1d;
+
+  color: #ffffff;
+}
+
+.nav-link.active {
+  background: #29151f;
+
+  color: #ff6fae;
+
+  border-bottom-color: #ff4f9a;
+}
+
+
+/* =====================================================
+   NAVBAR RIGHT
+===================================================== */
+
+.navbar-right {
+  margin-left: auto;
+
+  display: flex;
+  align-items: center;
+}
+
+
+/* =====================================================
+   TOP CHECK-IN STATUS
+===================================================== */
+
+.top-check-status {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  margin-right: 20px;
+
+  font-size: 12px;
+
+  color: #cccccc;
+}
+
+.top-status-dot {
+  width: 10px;
+  height: 10px;
+
+  display: inline-block;
+
+  border-radius: 50%;
+}
+
+.top-status-dot.online {
+  background: #20d76b;
+
+  box-shadow:
+    0 0 6px rgba(32, 215, 107, 0.8);
+}
+
+.top-status-dot.offline {
+  background: #777777;
+}
+
+
+/* =====================================================
+   PROFILE
+===================================================== */
+
+.profile-container {
+  position: relative;
+}
+
+.profile-avatar {
+  width: 35px;
+  height: 35px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #ff6b9f;
+
+  color: white;
+
+  font-weight: bold;
+
+  box-shadow:
+    0 0 8px rgba(255, 79, 154, 0.3);
+}
+
+.profile-avatar:hover {
+  background: #ff4f9a;
+}
+
+
+/* =====================================================
+   PROFILE DROPDOWN
+===================================================== */
+
+.profile-dropdown {
+  position: absolute;
+
+  right: 0;
+  top: 47px;
+
+  width: 180px;
+
+  background: #191919;
+
+  border: 1px solid #444444;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.5);
+
+  z-index: 1000;
+}
+
+.profile-dropdown button {
+  width: 100%;
+
+  padding: 15px;
+
+  border: none;
+
+  background: transparent;
+
+  color: #ffffff;
+
+  text-align: left;
+
+  font-size: 14px;
+}
+
+.profile-dropdown button:hover {
+  background: #292929;
+
+  color: #ff6fae;
+}
+
+
+/* =====================================================
+   MAIN CONTENT
+===================================================== */
+
+.main-content {
+  min-height: calc(100vh - 60px);
+
+  padding: 30px 45px;
+
+  background: #0d0d0d;
+}
+
+
+/* =====================================================
+   EMPLOYEES
+===================================================== */
+
+.employees-section {
+  max-width: 1050px;
+
+  margin: auto;
+}
+
+
+/* =====================================================
+   PAGE HEADER
+===================================================== */
+
+.page-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 25px;
+}
+
+.new-button {
+  padding: 9px 25px;
+
+  border: none;
+
+  background: #ff4f9a;
+
+  color: #ffffff;
+
+  font-size: 13px;
+
+  font-weight: bold;
+
+  border-radius: 3px;
+
+  box-shadow:
+    0 0 10px rgba(255, 79, 154, 0.2);
+}
+
+.new-button:hover {
+  background: #ff6fae;
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+.search-container input {
+  width: 300px;
+  height: 36px;
+
+  padding: 0 15px;
+
+  background: #181818;
+
+  color: #ffffff;
+
+  border: 1px solid #444444;
+
+  border-radius: 3px;
+
+  outline: none;
+}
+
+.search-container input:focus {
+  border-color: #ff4f9a;
+}
+
+.search-container input::placeholder {
+  color: #777777;
+}
+
+
+/* =====================================================
+   EMPLOYEE GRID
+===================================================== */
+
+.employee-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 22px 35px;
+}
+
+
+/* =====================================================
+   EMPLOYEE CARD
+===================================================== */
+
+.employee-card {
+  height: 135px;
+
+  padding: 11px;
+
+  position: relative;
+
+  background: #171717;
+
+  border: 1px solid #444444;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.employee-card:hover {
+  border-color: #ff4f9a;
+
+  background: #1d171a;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 5px 20px rgba(0, 0, 0, 0.4);
+}
+
+
+/* =====================================================
+   EMPLOYEE CARD TOP
+===================================================== */
+
+.employee-top {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: flex-start;
+}
+
+.employee-photo {
+  width: 45px;
+  height: 45px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #202020;
+
+  border: 1px solid #555555;
+
+  font-size: 23px;
+}
+
+
+/* =====================================================
+   EMPLOYEE STATUS
+===================================================== */
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+
+  border-radius: 50%;
+
+  border: 1px solid #555555;
+}
+
+.status-dot.present {
+  background: #20d76b;
+
+  box-shadow:
+    0 0 5px rgba(32, 215, 107, 0.5);
+}
+
+.status-dot.leave {
+  background: #4ca3ff;
+}
+
+.status-dot.absent {
+  background: #ffc107;
+}
+
+
+/* =====================================================
+   EMPLOYEE TEXT
+===================================================== */
+
+.employee-name {
+  margin-top: 8px;
+
+  color: #ffffff;
+
+  font-size: 13px;
+
+  font-weight: 600;
+}
+
+.employee-role {
+  margin-top: 3px;
+
+  color: #aaaaaa;
+
+  font-size: 11px;
+}
+
+.employee-department {
+  margin-top: 3px;
+
+  color: #777777;
+
+  font-size: 10px;
+}
+
+
+/* =====================================================
+   EMPLOYEE DETAILS
+===================================================== */
+
+.employee-details-page {
+  max-width: 900px;
+
+  margin: auto;
+}
+
+.back-button {
+  margin-bottom: 20px;
+
+  padding: 8px 15px;
+
+  border: 1px solid #444444;
+
+  background: #181818;
+
+  color: #ffffff;
+
+  border-radius: 3px;
+}
+
+.back-button:hover {
+  border-color: #ff4f9a;
+
+  color: #ff6fae;
+}
+
+
+/* =====================================================
+   PROFILE CARD
+===================================================== */
+
+.employee-details-card {
+  position: relative;
+
+  padding: 30px;
+
+  background: #171717;
+
+  border: 1px solid #444444;
+}
+
+.details-profile {
+  display: flex;
+
+  align-items: center;
+
+  gap: 20px;
+}
+
+.large-profile {
+  width: 80px;
+  height: 80px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #202020;
+
+  border: 1px solid #555555;
+
+  font-size: 38px;
+}
+
+.details-profile h2 {
+  margin: 0 0 6px;
+
+  color: #ffffff;
+}
+
+.details-profile p {
+  margin: 0;
+
+  color: #aaaaaa;
+}
+
+.details-divider {
+  height: 1px;
+
+  margin: 25px 0;
+
+  background: #333333;
+}
+
+
+/* =====================================================
+   DETAILS GRID
+===================================================== */
+
+.details-grid {
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap: 25px;
+}
+
+.details-grid label {
+  color: #777777;
+
+  font-size: 12px;
+}
+
+.details-grid p {
+  margin-top: 7px;
+
+  color: #eeeeee;
+
+  font-size: 14px;
+}
+
+
+/* =====================================================
+   VIEW ONLY
+===================================================== */
+
+.view-only-label {
+  display: inline-block;
+
+  margin-top: 30px;
+
+  padding: 6px 15px;
+
+  background: #29151f;
+
+  color: #ff6fae;
+
+  border: 1px solid #ff4f9a;
+
+  font-size: 12px;
+}
+
+
+/* =====================================================
+   ATTENDANCE
+===================================================== */
+
+.attendance-section {
+  max-width: 1050px;
+
+  margin: auto;
+}
+
+.attendance-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 12px;
+}
+
+.attendance-header h2 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 20px;
+}
+
+.attendance-search input {
+  width: 300px;
+  height: 35px;
+
+  padding: 0 15px;
+
+  background: #181818;
+
+  color: white;
+
+  border: 1px solid #444444;
+
+  outline: none;
+}
+
+.attendance-search input:focus {
+  border-color: #ff4f9a;
+}
+
+.attendance-search input::placeholder {
+  color: #777777;
+}
+
+
+/* =====================================================
+   ATTENDANCE TOOLBAR
+===================================================== */
+
+.attendance-toolbar {
+  display: flex;
+
+  gap: 5px;
+
+  margin-bottom: 15px;
+}
+
+.attendance-toolbar button {
+  height: 32px;
+
+  padding: 0 14px;
+
+  background: #181818;
+
+  color: #ffffff;
+
+  border: 1px solid #444444;
+}
+
+.attendance-toolbar button:hover {
+  border-color: #ff4f9a;
+
+  color: #ff6fae;
+}
+
+
+/* =====================================================
+   ROLE SWITCH
+===================================================== */
+
+.role-switch {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 11px 14px;
+
+  margin-bottom: 15px;
+
+  background: #171717;
+
+  border: 1px solid #333333;
+
+  color: #aaaaaa;
+
+  font-size: 13px;
+}
+
+.role-switch strong {
+  color: #ff6fae;
+}
+
+.role-switch button {
+  padding: 7px 15px;
+
+  border: none;
+
+  background: #ff4f9a;
+
+  color: white;
+
+  font-size: 12px;
+}
+
+.role-switch button:hover {
+  background: #ff6fae;
+}
+
+
+/* =====================================================
+   ATTENDANCE TABLE
+===================================================== */
+
+.attendance-table-wrapper {
+  overflow-x: auto;
+
+  border: 1px solid #444444;
+}
+
+.attendance-table {
+  width: 100%;
+
+  border-collapse: collapse;
+
+  background: #151515;
+}
+
+.attendance-table th,
+.attendance-table td {
+  padding: 11px;
+
+  border: 1px solid #383838;
+
+  text-align: left;
+
+  font-size: 13px;
+}
+
+.attendance-table th {
+  background: #202020;
+
+  color: #ff6fae;
+
+  font-weight: 600;
+}
+
+.attendance-table td {
+  color: #dddddd;
+}
+
+.attendance-table tr:hover td {
+  background: #1d171a;
+}
+
+
+/* =====================================================
+   ATTENDANCE SUMMARY
+===================================================== */
+
+.attendance-summary {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  margin-bottom: 20px;
+
+  border: 1px solid #444444;
+
+  background: #171717;
+}
+
+.attendance-summary div {
+  padding: 15px;
+
+  border-right: 1px solid #444444;
+}
+
+.attendance-summary div:last-child {
+  border-right: none;
+}
+
+.attendance-summary span {
+  display: block;
+
+  color: #777777;
+
+  font-size: 11px;
+}
+
+.attendance-summary strong {
+  display: block;
+
+  margin-top: 7px;
+
+  color: #ff6fae;
+
+  font-size: 20px;
+}
+
+
+/* =====================================================
+   TIME OFF
+===================================================== */
+
+.timeoff-section {
+  max-width: 1050px;
+
+  margin: auto;
+}
+
+.timeoff-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  margin-bottom: 20px;
+}
+
+.timeoff-header input {
+  width: 300px;
+  height: 36px;
+
+  padding: 0 12px;
+
+  background: #181818;
+
+  color: white;
+
+  border: 1px solid #444444;
+
+  outline: none;
+}
+
+.timeoff-header input:focus {
+  border-color: #ff4f9a;
+}
+
+.timeoff-header input::placeholder {
+  color: #777777;
+}
+
+
+/* =====================================================
+   LEAVE SUMMARY
+===================================================== */
+
+.leave-summary {
+  display: flex;
+
+  gap: 20px;
+
+  margin-bottom: 20px;
+}
+
+.leave-summary div {
+  min-width: 220px;
+
+  padding: 15px;
+
+  background: #171717;
+
+  border: 1px solid #444444;
+}
+
+.leave-summary span {
+  display: block;
+
+  color: #ff6fae;
+
+  font-size: 13px;
+}
+
+.leave-summary strong {
+  display: block;
+
+  margin-top: 8px;
+
+  color: #eeeeee;
+}
+
+
+/* =====================================================
+   TIME OFF TABLE
+===================================================== */
+
+.timeoff-table-wrapper {
+  overflow-x: auto;
+
+  border: 1px solid #444444;
+}
+
+.timeoff-table {
+  width: 100%;
+
+  border-collapse: collapse;
+
+  background: #151515;
+}
+
+.timeoff-table th,
+.timeoff-table td {
+  padding: 12px;
+
+  border: 1px solid #383838;
+
+  text-align: left;
+
+  font-size: 13px;
+}
+
+.timeoff-table th {
+  background: #202020;
+
+  color: #ff6fae;
+}
+
+.timeoff-table td {
+  color: #dddddd;
+}
+
+
+/* =====================================================
+   PENDING
+===================================================== */
+
+.pending {
+  display: inline-block;
+
+  padding: 4px 10px;
+
+  background: #29151f;
+
+  border: 1px solid #ff4f9a;
+
+  color: #ff6fae;
+
+  border-radius: 3px;
+
+  font-size: 11px;
+}
+
+
+/* =====================================================
+   CHECK IN / CHECK OUT
+===================================================== */
+
+.attendance-actions {
+  position: fixed;
+
+  right: 35px;
+
+  bottom: 30px;
+
+  z-index: 50;
+}
+
+.check-card {
+  min-width: 160px;
+
+  padding: 10px;
+
+  background: #171717;
+
+  border: 1px solid #444444;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.45);
+}
+
+.check-in-button,
+.check-out-button {
+  width: 100%;
+
+  padding: 10px;
+
+  border: 1px solid #555555;
+
+  background: #1e1e1e;
+
+  color: #ffffff;
+
+  font-size: 13px;
+}
+
+.check-in-button:hover {
+  border-color: #20d76b;
+
+  color: #20d76b;
+}
+
+.check-card.checked {
+  min-width: 180px;
+
+  border-color: #20d76b;
+}
+
+.check-card.checked span {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: #aaaaaa;
+
+  font-size: 11px;
+}
+
+.check-out-button:hover {
+  border-color: #ff4f9a;
+
+  color: #ff6fae;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 800px) {
+
+  .top-navbar {
+    padding: 0 12px;
+  }
+
+  .company-logo {
+    width: auto;
+
+    margin-right: 10px;
+  }
+
+  .company-logo span {
+    display: none;
+  }
+
+  .nav-link {
+    padding: 0 10px;
+
+    font-size: 12px;
+  }
+
+  .top-check-status {
+    margin-right: 10px;
+  }
+
+  .top-check-status span:last-child {
+    display: none;
+  }
+
+  .main-content {
+    padding: 20px;
+  }
+
+  .employee-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .attendance-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .attendance-summary div {
+    border-right: none;
+
+    border-bottom: 1px solid #444444;
+  }
+
+  .attendance-summary div:last-child {
+    border-bottom: none;
+  }
+}
+
+
+@media (max-width: 500px) {
+
+  .employee-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header,
+  .timeoff-header {
+    flex-direction: column;
+
+    gap: 10px;
+
+    align-items: stretch;
+  }
+
+  .search-container input,
+  .attendance-search input,
+  .timeoff-header input {
+    width: 100%;
+  }
+
+  .attendance-header {
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 10px;
+  }
+
+  .leave-summary {
+    flex-direction: column;
+  }
+
+  .attendance-actions {
+    right: 15px;
+
+    bottom: 15px;
+  }
+
+}
