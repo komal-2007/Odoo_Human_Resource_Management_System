@@ -1,18 +1,96 @@
-import { useState } from "react"
-import { employees } from "../data/mockData"
+import { useState, useEffect } from "react"
+import { employees as mockEmployees } from "../data/mockData"
 import ResumeTab from "../components/profile/ResumeTab"
 import PrivateInfoTab from "../components/profile/PrivateInfoTab"
 import SalaryInfoTab from "../components/profile/SalaryInfoTab"
 import SecurityTab from "../components/profile/SecurityTab"
+import { apiGetEmployee, apiGetMyProfile } from "../services/apiService"
 
 const tabs = ["Resume", "Private Info", "Salary Info", "Security"]
 
 export default function EmployeeProfile({ employeeId, onBack, currentUser }) {
   const [activeTab, setActiveTab] = useState("Resume")
+  const [employee, setEmployee] = useState(null)
+  const [loading, setLoading] = useState(true)
 
-  const employee = employees.find((emp) => emp.id === employeeId)
   const isAdmin = currentUser?.role === "admin"
+
+  useEffect(() => {
+    async function loadEmployee() {
+      try {
+        let data = null
+        if (isAdmin && employeeId) {
+          data = await apiGetEmployee(employeeId)
+        } else {
+          data = await apiGetMyProfile()
+        }
+
+        if (data) {
+          // Normalize backend employee profile with fallback tab sections
+          const mockMatch = mockEmployees.find((e) => e.id === employeeId) || mockEmployees[0]
+          setEmployee({
+            id: data.id,
+            name: `${data.firstName} ${data.lastName || ""}`.trim(),
+            loginId: data.user?.loginId || data.employeeCode || "",
+            company: "DayFlow Technologies",
+            department: data.department || "General",
+            manager: data.manager || "Anita Rao",
+            location: data.location || "Bengaluru, IN",
+            resume: data.resume || mockMatch?.resume || {
+              about: `${data.firstName} is a valued member of the ${data.department || "team"}.`,
+              whatILoveAboutMyJob: "Collaborating with high-impact teams.",
+              skills: ["Communication", "Problem Solving"],
+              certifications: [],
+            },
+            privateInfo: {
+              personalEmail: data.user?.email || mockMatch?.privateInfo?.personalEmail || "",
+              phone: data.phone || mockMatch?.privateInfo?.phone || "+91 98000 00000",
+              address: mockMatch?.privateInfo?.address || "Bengaluru, KA, India",
+              dateOfBirth: mockMatch?.privateInfo?.dateOfBirth || "01 Jan 1998",
+              maritalStatus: mockMatch?.privateInfo?.maritalStatus || "Single",
+            },
+            salary: mockMatch?.salary || {
+              monthWage: 45000,
+              yearlyWage: 540000,
+              workingDaysPerWeek: 5,
+              breakTimeHrs: 1,
+              components: [
+                { label: "Basic Salary", amountPerMonth: 22500, percentOfWage: 50 },
+                { label: "House Rent Allowance", amountPerMonth: 11250, percentOfWage: 25 },
+              ],
+              providentFund: { employeeContribution: 2700, employerContribution: 2700, percent: 12 },
+              taxDeductions: [{ label: "Professional Tax", amountPerMonth: 200 }],
+            },
+            security: {
+              lastPasswordChange: "Default generated",
+              twoFactorEnabled: false,
+            },
+          })
+          setLoading(false)
+          return
+        }
+      } catch (err) {
+        console.warn("Could not fetch profile from backend, using mock:", err.message)
+      }
+
+      // Fallback to mock data
+      const found = mockEmployees.find((emp) => emp.id === employeeId) || mockEmployees[0]
+      setEmployee(found || null)
+      setLoading(false)
+    }
+
+    loadEmployee()
+  }, [employeeId, isAdmin])
+
   const isOwnProfile = currentUser?.loginId === employee?.loginId || currentUser?.email === employee?.privateInfo?.personalEmail
+
+  if (loading) {
+    return (
+      <div className="p-8">
+        <p className="text-sm text-ink-secondary">Loading employee profile...</p>
+      </div>
+    )
+  }
 
   if (!employee) {
     return (

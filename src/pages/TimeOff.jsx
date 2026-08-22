@@ -1,6 +1,12 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { initialLeaveRequests, leaveAllocations } from "../data/timeOffData"
 import { employees } from "../data/mockData"
+import {
+  apiCreateLeaveRequest,
+  apiGetMyLeaveRequests,
+  apiGetAllLeaveRequests,
+  apiUpdateLeaveStatus,
+} from "../services/apiService"
 
 export default function TimeOff({ currentUser }) {
   const [activeTab, setActiveTab] = useState("timeoff") // "timeoff" | "allocation"
@@ -10,6 +16,58 @@ export default function TimeOff({ currentUser }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const isAdmin = currentUser?.role === "admin"
+
+  // Fetch real leave requests from backend
+  useEffect(() => {
+    async function loadRequests() {
+      try {
+        const data = isAdmin
+          ? await apiGetAllLeaveRequests()
+          : await apiGetMyLeaveRequests()
+
+        if (Array.isArray(data) && data.length > 0) {
+          const normalized = data.map((item) => {
+            const emp = item.employee || {}
+            const empName = emp.firstName ? `${emp.firstName} ${emp.lastName || ""}`.trim() : "Current User"
+            const typeMap = {
+              ANNUAL: "Paid Leave",
+              SICK: "Sick Leave",
+              UNPAID: "Unpaid Leave",
+              CASUAL: "Casual Leave",
+              OTHER: "Other",
+            }
+            const statusMap = {
+              PENDING: "Pending",
+              APPROVED: "Approved",
+              REJECTED: "Rejected",
+            }
+            const start = new Date(item.startDate)
+            const end = new Date(item.endDate)
+            const diffDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24)) + 1
+
+            return {
+              id: item.id,
+              employeeId: item.employeeId,
+              employeeName: empName,
+              department: emp.department || "General",
+              leaveType: typeMap[item.leaveType] || item.leaveType,
+              startDate: item.startDate?.slice(0, 10),
+              endDate: item.endDate?.slice(0, 10),
+              days: diffDays > 0 ? diffDays : 1,
+              reason: item.reason || "No remarks provided",
+              status: statusMap[item.status] || item.status,
+              appliedOn: item.createdAt?.slice(0, 10) || new Date().toISOString().slice(0, 10),
+            }
+          })
+          setRequests(normalized)
+        }
+      } catch (err) {
+        console.warn("Could not fetch leave requests from backend, using mock:", err.message)
+      }
+    }
+
+    loadRequests()
+  }, [isAdmin])
 
   // New leave form state
   const [formData, setFormData] = useState({
@@ -42,7 +100,12 @@ export default function TimeOff({ currentUser }) {
   })
 
   // Handlers for Admin actions
-  function handleApprove(id) {
+  async function handleApprove(id) {
+    try {
+      await apiUpdateLeaveStatus(id, "APPROVED")
+    } catch (err) {
+      console.warn("Backend update leave status note:", err.message)
+    }
     setRequests((prev) =>
       prev.map((req) =>
         req.id === id ? { ...req, status: "Approved" } : req
@@ -50,7 +113,12 @@ export default function TimeOff({ currentUser }) {
     )
   }
 
-  function handleReject(id) {
+  async function handleReject(id) {
+    try {
+      await apiUpdateLeaveStatus(id, "REJECTED")
+    } catch (err) {
+      console.warn("Backend update leave status note:", err.message)
+    }
     setRequests((prev) =>
       prev.map((req) =>
         req.id === id ? { ...req, status: "Rejected" } : req
@@ -59,7 +127,7 @@ export default function TimeOff({ currentUser }) {
   }
 
   // Handle new request submission
-  function handleCreateRequest(e) {
+  async function handleCreateRequest(e) {
     e.preventDefault()
     if (!formData.startDate || !formData.endDate) {
       alert("Please select both start and end dates.")
@@ -76,10 +144,27 @@ export default function TimeOff({ currentUser }) {
     const diffTime = Math.abs(end - start)
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1
 
+    const leaveTypeToApi = {
+      "Paid Leave": "ANNUAL",
+      "Sick Leave": "SICK",
+      "Unpaid Leave": "UNPAID",
+    }
+
+    try {
+      await apiCreateLeaveRequest({
+        leaveType: leaveTypeToApi[formData.leaveType] || "ANNUAL",
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        reason: formData.reason || "Time off request",
+      })
+    } catch (err) {
+      console.warn("Backend create leave request note:", err.message)
+    }
+
     const newRequest = {
       id: Date.now(),
       employeeId: Number(formData.employeeId),
-      employeeName: selectedEmp ? selectedEmp.name : "Unknown",
+      employeeName: selectedEmp ? selectedEmp.name : (currentUser?.name || "Current User"),
       department: selectedEmp ? selectedEmp.department : "General",
       leaveType: formData.leaveType,
       startDate: formData.startDate,

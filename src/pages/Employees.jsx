@@ -1,18 +1,70 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import EmployeeCard from "../components/EmployeeCard"
-import { employees as initialEmployees } from "../data/mockData"
+import { employees as mockEmployees } from "../data/mockData"
 import { generateLoginId } from "../utils/idGenerator"
+import { apiGetEmployees, apiGetMyProfile, apiCreateEmployee } from "../services/apiService"
 
 export default function Employees({ onSelectEmployee, currentUser }) {
-  const [employeeList, setEmployeeList] = useState(initialEmployees)
+  const [employeeList, setEmployeeList] = useState([])
+  const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
   const [isNewModalOpen, setIsNewModalOpen] = useState(false)
 
   const isAdmin = currentUser?.role === "admin"
 
+  // Load employees from backend (falls back to mock data)
+  useEffect(() => {
+    async function loadEmployees() {
+      try {
+        if (isAdmin) {
+          // Admin sees all employees
+          const data = await apiGetEmployees()
+          // Normalize backend data to match frontend card expectations
+          const normalized = data.map((emp) => ({
+            id: emp.id,
+            name: `${emp.firstName} ${emp.lastName || ""}`.trim(),
+            department: emp.department || "General",
+            status: "present", // Will be enhanced with real attendance later
+            loginId: emp.user?.loginId || emp.employeeCode || "",
+            email: emp.user?.email || "",
+            phone: emp.phone || "",
+            jobTitle: emp.jobTitle || "",
+            employeeCode: emp.employeeCode || "",
+          }))
+          setEmployeeList(normalized)
+        } else {
+          // Employee sees their own profile in the directory (plus mock colleagues)
+          try {
+            const myProfile = await apiGetMyProfile()
+            const me = {
+              id: myProfile.id,
+              name: `${myProfile.firstName} ${myProfile.lastName || ""}`.trim(),
+              department: myProfile.department || "General",
+              status: "present",
+              loginId: myProfile.user?.loginId || myProfile.employeeCode || "",
+              email: myProfile.user?.email || "",
+              phone: myProfile.phone || "",
+              jobTitle: myProfile.jobTitle || "",
+            }
+            setEmployeeList([me, ...mockEmployees.filter(m => m.id !== me.id)])
+          } catch {
+            setEmployeeList(mockEmployees)
+          }
+        }
+      } catch (err) {
+        console.warn("Could not load employees from backend, using mock data:", err.message)
+        setEmployeeList(mockEmployees)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadEmployees()
+  }, [isAdmin])
+
   // New employee form state
   const [newEmpData, setNewEmpData] = useState({
     name: "",
+    email: "",
     department: "Engineering",
     manager: "Anita Rao",
     location: "Bengaluru, IN",
@@ -31,54 +83,63 @@ export default function Employees({ onSelectEmployee, currentUser }) {
     emp.department.toLowerCase().includes(search.toLowerCase())
   )
 
-  function handleCreateEmployee(e) {
+  const [createError, setCreateError] = useState("")
+
+  async function handleCreateEmployee(e) {
     e.preventDefault()
     if (!newEmpData.name.trim()) return
+    setCreateError("")
 
-    const newEmployee = {
-      id: Date.now(),
-      name: newEmpData.name.trim(),
-      department: newEmpData.department,
-      status: newEmpData.status,
-      loginId: previewLoginId,
-      company: currentUser?.company || "DayFlow Technologies",
-      manager: newEmpData.manager,
-      location: newEmpData.location,
-      resume: {
-        about: `${newEmpData.name} recently joined the ${newEmpData.department} team at ${currentUser?.company || "DayFlow"}.`,
-        whatILoveAboutMyJob: "Collaborating with high-impact teams.",
-        skills: ["Communication", "Problem Solving"],
-        certifications: [],
-      },
-      privateInfo: {
-        personalEmail: `${newEmpData.name.toLowerCase().replace(/\s+/g, ".")}@dayflow.com`,
-        phone: "+91 98000 00000",
-        address: "Bengaluru, KA, India",
-        dateOfBirth: "01 Jan 1998",
-        maritalStatus: "Single",
-      },
-      salary: {
-        monthWage: 45000,
-        yearlyWage: 540000,
-        workingDaysPerWeek: 5,
-        breakTimeHrs: 1,
-        components: [
-          { label: "Basic Salary", amountPerMonth: 22500, percentOfWage: 50 },
-          { label: "House Rent Allowance", amountPerMonth: 11250, percentOfWage: 25 },
-        ],
-        providentFund: { employeeContribution: 2700, employerContribution: 2700, percent: 12 },
-        taxDeductions: [{ label: "Professional Tax", amountPerMonth: 200 }],
-      },
-      security: {
-        lastPasswordChange: "Never (Default generated)",
-        twoFactorEnabled: false,
-      },
+    // Split name into firstName + lastName for the backend
+    const nameParts = newEmpData.name.trim().split(/\s+/)
+    const firstName = nameParts[0]
+    const lastName = nameParts.slice(1).join(" ") || firstName
+
+    try {
+      // Try creating via backend API
+      const result = await apiCreateEmployee({
+        email: newEmpData.email || `${firstName.toLowerCase()}.${lastName.toLowerCase()}@dayflow.com`,
+        firstName,
+        lastName,
+        department: newEmpData.department,
+        jobTitle: newEmpData.department, // Use department as job title default
+        dateOfJoining: new Date().toISOString().split("T")[0],
+      })
+
+      // Backend returns { employee, user, initialPassword }
+      const created = {
+        id: result.employee.id,
+        name: `${result.employee.firstName} ${result.employee.lastName || ""}`.trim(),
+        department: result.employee.department || "General",
+        status: "present",
+        loginId: result.user?.loginId || result.employee.employeeCode || "",
+        email: result.user?.email || "",
+        initialPassword: result.initialPassword,
+      }
+      setEmployeeList([created, ...employeeList])
+
+      // Show the initial password to the admin
+      if (result.initialPassword) {
+        alert(`Employee created!\n\nLogin ID: ${created.loginId}\nInitial Password: ${result.initialPassword}\n\nPlease share these credentials with the employee.`)
+      }
+    } catch (err) {
+      console.warn("Backend employee creation failed, creating locally:", err.message)
+      // Fallback: create locally with mock data
+      const newEmployee = {
+        id: Date.now(),
+        name: newEmpData.name.trim(),
+        department: newEmpData.department,
+        status: newEmpData.status,
+        loginId: previewLoginId,
+        company: currentUser?.company || "DayFlow Technologies",
+      }
+      setEmployeeList([newEmployee, ...employeeList])
     }
 
-    setEmployeeList([newEmployee, ...employeeList])
     setIsNewModalOpen(false)
     setNewEmpData({
       name: "",
+      email: "",
       department: "Engineering",
       manager: "Anita Rao",
       location: "Bengaluru, IN",
@@ -123,7 +184,15 @@ export default function Employees({ onSelectEmployee, currentUser }) {
         </div>
       </div>
 
+      {/* Loading state */}
+      {loading && (
+        <div className="text-center py-12">
+          <p className="text-sm text-ink-secondary">Loading employees...</p>
+        </div>
+      )}
+
       {/* Employee grid */}
+      {!loading && (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map((employee) => (
           <EmployeeCard
@@ -133,8 +202,9 @@ export default function Employees({ onSelectEmployee, currentUser }) {
           />
         ))}
       </div>
+      )}
 
-      {filtered.length === 0 && (
+      {!loading && filtered.length === 0 && (
         <p className="text-sm text-ink-secondary py-8 text-center">
           No employees match "{search}".
         </p>

@@ -1,8 +1,14 @@
-import { useState } from "react"
-import { employees } from "../data/mockData"
+import { useState, useEffect } from "react"
+import { employees as mockEmployees } from "../data/mockData"
 import { getAttendanceForDate } from "../data/attendanceData"
 import StatusIndicator from "../components/StatusIndicator"
 import CheckInOutWidget from "../components/CheckInOutWidget"
+import {
+  apiCheckIn,
+  apiCheckOut,
+  apiGetMyAttendance,
+  apiGetAllAttendance,
+} from "../services/apiService"
 
 function toDateKey(date) {
   return date.toISOString().slice(0, 10) // "YYYY-MM-DD"
@@ -19,19 +25,91 @@ function formatDisplayDate(date) {
 export default function Attendance({ checkedIn, since, onCheckIn, onCheckOut, currentUser }) {
   const [search, setSearch] = useState("")
   const [selectedDate, setSelectedDate] = useState(new Date("2026-08-22"))
+  const [attendanceRecords, setAttendanceRecords] = useState({})
+  const [loading, setLoading] = useState(false)
 
   const isAdmin = currentUser?.role === "admin"
   const dateKey = toDateKey(selectedDate)
-  const employeeIds = employees.map((emp) => emp.id)
-  const attendanceForDate = getAttendanceForDate(dateKey, employeeIds)
 
-  // In Employee mode, show only the current employee's record (or the first employee as fallback)
+  // Fetch real attendance from backend if available
+  useEffect(() => {
+    async function loadAttendance() {
+      setLoading(true)
+      try {
+        if (isAdmin) {
+          const data = await apiGetAllAttendance(undefined, dateKey)
+          if (Array.isArray(data) && data.length > 0) {
+            const map = {}
+            data.forEach((rec) => {
+              const empId = rec.employeeId || rec.employee?.id
+              map[empId] = {
+                status: rec.status?.toLowerCase() === "present" ? "present" : "absent",
+                checkIn: rec.checkIn ? new Date(rec.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "—",
+                checkOut: rec.checkOut ? new Date(rec.checkOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "—",
+                workHours: rec.workedHours != null ? `${rec.workedHours} hrs` : "—",
+                extraHours: rec.extraHours != null ? `${rec.extraHours} hrs` : "—",
+              }
+            })
+            setAttendanceRecords(map)
+            setLoading(false)
+            return
+          }
+        } else {
+          const data = await apiGetMyAttendance(dateKey, dateKey)
+          if (Array.isArray(data) && data.length > 0) {
+            const rec = data[0]
+            setAttendanceRecords({
+              [currentUser?.id || 1]: {
+                status: rec.status?.toLowerCase() === "present" ? "present" : "absent",
+                checkIn: rec.checkIn ? new Date(rec.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "—",
+                checkOut: rec.checkOut ? new Date(rec.checkOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "—",
+                workHours: rec.workedHours != null ? `${rec.workedHours} hrs` : "—",
+                extraHours: rec.extraHours != null ? `${rec.extraHours} hrs` : "—",
+              }
+            })
+            setLoading(false)
+            return
+          }
+        }
+      } catch (err) {
+        console.warn("Could not load attendance from API, using mock:", err.message)
+      }
+
+      // Fallback to mock attendance
+      const employeeIds = mockEmployees.map((emp) => emp.id)
+      const mockForDate = getAttendanceForDate(dateKey, employeeIds)
+      setAttendanceRecords(mockForDate)
+      setLoading(false)
+    }
+
+    loadAttendance()
+  }, [dateKey, isAdmin, currentUser])
+
+  async function handleCheckInAction() {
+    try {
+      await apiCheckIn()
+    } catch (err) {
+      console.warn("Backend check-in note:", err.message)
+    }
+    if (onCheckIn) onCheckIn()
+  }
+
+  async function handleCheckOutAction() {
+    try {
+      await apiCheckOut()
+    } catch (err) {
+      console.warn("Backend check-out note:", err.message)
+    }
+    if (onCheckOut) onCheckOut()
+  }
+
+  // In Employee mode, show only the current employee's record
   const displayedEmployees = isAdmin
-    ? employees
-    : employees.filter(
+    ? mockEmployees
+    : mockEmployees.filter(
         (emp) =>
           emp.name.toLowerCase() === currentUser?.name?.toLowerCase() ||
-          emp.id === 1 // fallback to demonstrate personal view
+          emp.id === 1 // fallback
       )
 
   const filteredEmployees = displayedEmployees.filter((emp) =>
@@ -80,8 +158,8 @@ export default function Attendance({ checkedIn, since, onCheckIn, onCheckOut, cu
           <CheckInOutWidget
             checkedIn={checkedIn}
             since={since}
-            onCheckIn={onCheckIn}
-            onCheckOut={onCheckOut}
+            onCheckIn={handleCheckInAction}
+            onCheckOut={handleCheckOutAction}
           />
         </div>
       </div>
@@ -100,7 +178,13 @@ export default function Attendance({ checkedIn, since, onCheckIn, onCheckOut, cu
           </thead>
           <tbody>
             {filteredEmployees.map((emp) => {
-              const record = attendanceForDate[emp.id]
+              const record = attendanceRecords[emp.id] || {
+                status: "absent",
+                checkIn: "—",
+                checkOut: "—",
+                workHours: "—",
+                extraHours: "—",
+              }
               return (
                 <tr
                   key={emp.id}
