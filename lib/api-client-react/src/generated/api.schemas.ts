@@ -230,6 +230,69 @@ export interface AttendanceRecord {
   updatedAt: string;
 }
 
+/**
+ * EARNING increases gross salary. DEDUCTION decreases net salary.
+ */
+export type SalaryComponentType = typeof SalaryComponentType[keyof typeof SalaryComponentType];
+
+
+export const SalaryComponentType = {
+  EARNING: 'EARNING',
+  DEDUCTION: 'DEDUCTION',
+} as const;
+
+export interface SalaryComponent {
+  id: string;
+  payrollId: string;
+  /** @minLength 1 */
+  name: string;
+  type: SalaryComponentType;
+  /** @minimum 0 */
+  amount: number;
+}
+
+export interface SalaryComponentInput {
+  /** @minLength 1 */
+  name: string;
+  type: SalaryComponentType;
+  /** @minimum 0 */
+  amount: number;
+}
+
+export interface PayrollRecord {
+  id: string;
+  employeeId: string;
+  payPeriodStart: string;
+  payPeriodEnd: string;
+  /** @minimum 0 */
+  basicSalary: number;
+  grossSalary: number;
+  /** @minimum 0 */
+  deductions: number;
+  netSalary: number;
+  createdAt: string;
+  components: SalaryComponent[];
+  employee?: LeaveEmployeeSummary;
+}
+
+export interface CreatePayrollRequest {
+  /** @minLength 1 */
+  employeeId: string;
+  payPeriodStart: string;
+  payPeriodEnd: string;
+  /** @minimum 0 */
+  basicSalary: number;
+  components?: SalaryComponentInput[];
+}
+
+export interface UpdatePayrollRequest {
+  payPeriodStart?: string;
+  payPeriodEnd?: string;
+  /** @minimum 0 */
+  basicSalary?: number;
+  components?: SalaryComponentInput[];
+}
+
 export type GetMyAttendanceParams = {
 from?: string;
 to?: string;

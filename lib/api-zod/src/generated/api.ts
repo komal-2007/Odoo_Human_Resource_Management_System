@@ -493,3 +493,331 @@ export const ListAttendanceResponseItem = zod.object({
   "updatedAt": zod.coerce.date()
 })
 export const ListAttendanceResponse = zod.array(ListAttendanceResponseItem)
+
+
+/**
+ * Employee-authenticated. Returns payroll records belonging only to the current employee, newest pay periods first, including salary components. Gross salary, deductions, and net salary are server-calculated.
+ * @summary List my payroll records
+ */
+export const listMyPayrollResponseBasicSalaryMin = 0;
+
+export const listMyPayrollResponseDeductionsMin = 0;
+
+
+export const listMyPayrollResponseComponentsItemAmountMin = 0;
+
+
+
+export const ListMyPayrollResponseItem = zod.object({
+  "id": zod.string(),
+  "employeeId": zod.string(),
+  "payPeriodStart": zod.coerce.date(),
+  "payPeriodEnd": zod.coerce.date(),
+  "basicSalary": zod.number().min(listMyPayrollResponseBasicSalaryMin),
+  "grossSalary": zod.number(),
+  "deductions": zod.number().min(listMyPayrollResponseDeductionsMin),
+  "netSalary": zod.number(),
+  "createdAt": zod.coerce.date(),
+  "components": zod.array(zod.object({
+  "id": zod.string(),
+  "payrollId": zod.string(),
+  "name": zod.string().min(1),
+  "type": zod.enum(['EARNING', 'DEDUCTION']).describe('EARNING increases gross salary. DEDUCTION decreases net salary.'),
+  "amount": zod.number().min(listMyPayrollResponseComponentsItemAmountMin)
+})),
+  "employee": zod.object({
+  "id": zod.string(),
+  "employeeCode": zod.string(),
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "user": zod.object({
+  "id": zod.string(),
+  "loginId": zod.string(),
+  "email": zod.string().describe('Valid email address'),
+  "role": zod.enum(['ADMIN', 'EMPLOYEE']),
+  "mustChangePassword": zod.boolean().optional()
+})
+}).optional()
+})
+export const ListMyPayrollResponse = zod.array(ListMyPayrollResponseItem)
+
+
+/**
+ * Employee-authenticated. Returns a payroll record only if it belongs to the current employee. Records for other employees are not distinguished from missing records.
+ * @summary Get one of my payroll records
+ */
+export const GetMyPayrollParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const getMyPayrollResponseBasicSalaryMin = 0;
+
+export const getMyPayrollResponseDeductionsMin = 0;
+
+
+export const getMyPayrollResponseComponentsItemAmountMin = 0;
+
+
+
+export const GetMyPayrollResponse = zod.object({
+  "id": zod.string(),
+  "employeeId": zod.string(),
+  "payPeriodStart": zod.coerce.date(),
+  "payPeriodEnd": zod.coerce.date(),
+  "basicSalary": zod.number().min(getMyPayrollResponseBasicSalaryMin),
+  "grossSalary": zod.number(),
+  "deductions": zod.number().min(getMyPayrollResponseDeductionsMin),
+  "netSalary": zod.number(),
+  "createdAt": zod.coerce.date(),
+  "components": zod.array(zod.object({
+  "id": zod.string(),
+  "payrollId": zod.string(),
+  "name": zod.string().min(1),
+  "type": zod.enum(['EARNING', 'DEDUCTION']).describe('EARNING increases gross salary. DEDUCTION decreases net salary.'),
+  "amount": zod.number().min(getMyPayrollResponseComponentsItemAmountMin)
+})),
+  "employee": zod.object({
+  "id": zod.string(),
+  "employeeCode": zod.string(),
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "user": zod.object({
+  "id": zod.string(),
+  "loginId": zod.string(),
+  "email": zod.string().describe('Valid email address'),
+  "role": zod.enum(['ADMIN', 'EMPLOYEE']),
+  "mustChangePassword": zod.boolean().optional()
+})
+}).optional()
+})
+
+
+/**
+ * Admin/HR-authenticated. Returns all payroll records with employee summaries and salary components, newest pay periods first.
+ * @summary List all payroll records
+ */
+export const listPayrollResponseBasicSalaryMin = 0;
+
+export const listPayrollResponseDeductionsMin = 0;
+
+
+export const listPayrollResponseComponentsItemAmountMin = 0;
+
+
+
+export const ListPayrollResponseItem = zod.object({
+  "id": zod.string(),
+  "employeeId": zod.string(),
+  "payPeriodStart": zod.coerce.date(),
+  "payPeriodEnd": zod.coerce.date(),
+  "basicSalary": zod.number().min(listPayrollResponseBasicSalaryMin),
+  "grossSalary": zod.number(),
+  "deductions": zod.number().min(listPayrollResponseDeductionsMin),
+  "netSalary": zod.number(),
+  "createdAt": zod.coerce.date(),
+  "components": zod.array(zod.object({
+  "id": zod.string(),
+  "payrollId": zod.string(),
+  "name": zod.string().min(1),
+  "type": zod.enum(['EARNING', 'DEDUCTION']).describe('EARNING increases gross salary. DEDUCTION decreases net salary.'),
+  "amount": zod.number().min(listPayrollResponseComponentsItemAmountMin)
+})),
+  "employee": zod.object({
+  "id": zod.string(),
+  "employeeCode": zod.string(),
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "user": zod.object({
+  "id": zod.string(),
+  "loginId": zod.string(),
+  "email": zod.string().describe('Valid email address'),
+  "role": zod.enum(['ADMIN', 'EMPLOYEE']),
+  "mustChangePassword": zod.boolean().optional()
+})
+}).optional()
+})
+export const ListPayrollResponse = zod.array(ListPayrollResponseItem)
+
+
+/**
+ * Admin/HR-authenticated. Creates a payroll record and its salary components atomically. EARNING components increase gross salary; DEDUCTION components decrease net salary. grossSalary, deductions, and netSalary are calculated on the server and must not be supplied by the client.
+ * @summary Create a payroll record
+ */
+
+export const createPayrollBodyBasicSalaryMin = 0;
+
+
+export const createPayrollBodyComponentsItemAmountMin = 0;
+
+
+
+export const CreatePayrollBody = zod.object({
+  "employeeId": zod.string().min(1),
+  "payPeriodStart": zod.coerce.date(),
+  "payPeriodEnd": zod.coerce.date(),
+  "basicSalary": zod.number().min(createPayrollBodyBasicSalaryMin),
+  "components": zod.array(zod.object({
+  "name": zod.string().min(1),
+  "type": zod.enum(['EARNING', 'DEDUCTION']).describe('EARNING increases gross salary. DEDUCTION decreases net salary.'),
+  "amount": zod.number().min(createPayrollBodyComponentsItemAmountMin)
+})).optional()
+})
+
+export const createPayrollResponseBasicSalaryMin = 0;
+
+export const createPayrollResponseDeductionsMin = 0;
+
+
+export const createPayrollResponseComponentsItemAmountMin = 0;
+
+
+
+export const CreatePayrollResponse = zod.object({
+  "id": zod.string(),
+  "employeeId": zod.string(),
+  "payPeriodStart": zod.coerce.date(),
+  "payPeriodEnd": zod.coerce.date(),
+  "basicSalary": zod.number().min(createPayrollResponseBasicSalaryMin),
+  "grossSalary": zod.number(),
+  "deductions": zod.number().min(createPayrollResponseDeductionsMin),
+  "netSalary": zod.number(),
+  "createdAt": zod.coerce.date(),
+  "components": zod.array(zod.object({
+  "id": zod.string(),
+  "payrollId": zod.string(),
+  "name": zod.string().min(1),
+  "type": zod.enum(['EARNING', 'DEDUCTION']).describe('EARNING increases gross salary. DEDUCTION decreases net salary.'),
+  "amount": zod.number().min(createPayrollResponseComponentsItemAmountMin)
+})),
+  "employee": zod.object({
+  "id": zod.string(),
+  "employeeCode": zod.string(),
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "user": zod.object({
+  "id": zod.string(),
+  "loginId": zod.string(),
+  "email": zod.string().describe('Valid email address'),
+  "role": zod.enum(['ADMIN', 'EMPLOYEE']),
+  "mustChangePassword": zod.boolean().optional()
+})
+}).optional()
+})
+
+
+/**
+ * Admin/HR-authenticated. Returns one payroll record with employee information and salary components.
+ * @summary Get a payroll record
+ */
+export const GetPayrollParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const getPayrollResponseBasicSalaryMin = 0;
+
+export const getPayrollResponseDeductionsMin = 0;
+
+
+export const getPayrollResponseComponentsItemAmountMin = 0;
+
+
+
+export const GetPayrollResponse = zod.object({
+  "id": zod.string(),
+  "employeeId": zod.string(),
+  "payPeriodStart": zod.coerce.date(),
+  "payPeriodEnd": zod.coerce.date(),
+  "basicSalary": zod.number().min(getPayrollResponseBasicSalaryMin),
+  "grossSalary": zod.number(),
+  "deductions": zod.number().min(getPayrollResponseDeductionsMin),
+  "netSalary": zod.number(),
+  "createdAt": zod.coerce.date(),
+  "components": zod.array(zod.object({
+  "id": zod.string(),
+  "payrollId": zod.string(),
+  "name": zod.string().min(1),
+  "type": zod.enum(['EARNING', 'DEDUCTION']).describe('EARNING increases gross salary. DEDUCTION decreases net salary.'),
+  "amount": zod.number().min(getPayrollResponseComponentsItemAmountMin)
+})),
+  "employee": zod.object({
+  "id": zod.string(),
+  "employeeCode": zod.string(),
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "user": zod.object({
+  "id": zod.string(),
+  "loginId": zod.string(),
+  "email": zod.string().describe('Valid email address'),
+  "role": zod.enum(['ADMIN', 'EMPLOYEE']),
+  "mustChangePassword": zod.boolean().optional()
+})
+}).optional()
+})
+
+
+/**
+ * Admin/HR-authenticated. Corrects pay period, basic salary, and/or salary components. employeeId cannot be changed. Salary components are replaced atomically when provided. grossSalary, deductions, and netSalary are recalculated on the server.
+ * @summary Update a payroll record
+ */
+export const UpdatePayrollParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const updatePayrollBodyBasicSalaryMin = 0;
+
+
+export const updatePayrollBodyComponentsItemAmountMin = 0;
+
+
+
+export const UpdatePayrollBody = zod.object({
+  "payPeriodStart": zod.coerce.date().optional(),
+  "payPeriodEnd": zod.coerce.date().optional(),
+  "basicSalary": zod.number().min(updatePayrollBodyBasicSalaryMin).optional(),
+  "components": zod.array(zod.object({
+  "name": zod.string().min(1),
+  "type": zod.enum(['EARNING', 'DEDUCTION']).describe('EARNING increases gross salary. DEDUCTION decreases net salary.'),
+  "amount": zod.number().min(updatePayrollBodyComponentsItemAmountMin)
+})).optional()
+})
+
+export const updatePayrollResponseBasicSalaryMin = 0;
+
+export const updatePayrollResponseDeductionsMin = 0;
+
+
+export const updatePayrollResponseComponentsItemAmountMin = 0;
+
+
+
+export const UpdatePayrollResponse = zod.object({
+  "id": zod.string(),
+  "employeeId": zod.string(),
+  "payPeriodStart": zod.coerce.date(),
+  "payPeriodEnd": zod.coerce.date(),
+  "basicSalary": zod.number().min(updatePayrollResponseBasicSalaryMin),
+  "grossSalary": zod.number(),
+  "deductions": zod.number().min(updatePayrollResponseDeductionsMin),
+  "netSalary": zod.number(),
+  "createdAt": zod.coerce.date(),
+  "components": zod.array(zod.object({
+  "id": zod.string(),
+  "payrollId": zod.string(),
+  "name": zod.string().min(1),
+  "type": zod.enum(['EARNING', 'DEDUCTION']).describe('EARNING increases gross salary. DEDUCTION decreases net salary.'),
+  "amount": zod.number().min(updatePayrollResponseComponentsItemAmountMin)
+})),
+  "employee": zod.object({
+  "id": zod.string(),
+  "employeeCode": zod.string(),
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "user": zod.object({
+  "id": zod.string(),
+  "loginId": zod.string(),
+  "email": zod.string().describe('Valid email address'),
+  "role": zod.enum(['ADMIN', 'EMPLOYEE']),
+  "mustChangePassword": zod.boolean().optional()
+})
+}).optional()
+})

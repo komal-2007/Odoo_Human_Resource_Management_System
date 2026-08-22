@@ -20,6 +20,8 @@ tags:
     description: Employee leave requests and Admin/HR decisions
   - name: attendance
     description: Employee attendance and check-in/check-out operations
+  - name: payroll
+    description: Employee payroll records and Admin/HR payroll operations
 
 paths:
   /healthz:
@@ -470,6 +472,176 @@ paths:
         "403":
           description: Admin/HR access required
 
+  /payroll/me:
+    get:
+      operationId: listMyPayroll
+      tags: [payroll]
+      summary: List my payroll records
+      description: Employee-authenticated. Returns payroll records belonging only to the current employee, newest pay periods first, including salary components. Gross salary, deductions, and net salary are server-calculated.
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: Current employee payroll records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PayrollRecord"
+        "401":
+          description: Authentication required
+        "403":
+          description: Employee access required
+        "404":
+          description: Employee profile not found
+
+  /payroll/me/{id}:
+    get:
+      operationId: getMyPayroll
+      tags: [payroll]
+      summary: Get one of my payroll records
+      description: Employee-authenticated. Returns a payroll record only if it belongs to the current employee. Records for other employees are not distinguished from missing records.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Current employee payroll record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PayrollRecord"
+        "401":
+          description: Authentication required
+        "403":
+          description: Employee access required
+        "404":
+          description: Payroll record or employee profile not found
+
+  /payroll:
+    get:
+      operationId: listPayroll
+      tags: [payroll]
+      summary: List all payroll records
+      description: Admin/HR-authenticated. Returns all payroll records with employee summaries and salary components, newest pay periods first.
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: All payroll records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PayrollRecord"
+        "401":
+          description: Authentication required
+        "403":
+          description: Admin/HR access required
+
+    post:
+      operationId: createPayroll
+      tags: [payroll]
+      summary: Create a payroll record
+      description: >
+        Admin/HR-authenticated. Creates a payroll record and its salary components atomically.
+        EARNING components increase gross salary; DEDUCTION components decrease net salary.
+        grossSalary, deductions, and netSalary are calculated on the server and must not be supplied by the client.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePayrollRequest"
+      responses:
+        "201":
+          description: Payroll record created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PayrollRecord"
+        "400":
+          description: Invalid payroll details
+        "401":
+          description: Authentication required
+        "403":
+          description: Admin/HR access required
+        "404":
+          description: Employee profile not found
+        "409":
+          description: Payroll record already exists for this employee and pay period
+
+  /payroll/{id}:
+    get:
+      operationId: getPayroll
+      tags: [payroll]
+      summary: Get a payroll record
+      description: Admin/HR-authenticated. Returns one payroll record with employee information and salary components.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Payroll record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PayrollRecord"
+        "401":
+          description: Authentication required
+        "403":
+          description: Admin/HR access required
+        "404":
+          description: Payroll record not found
+
+    patch:
+      operationId: updatePayroll
+      tags: [payroll]
+      summary: Update a payroll record
+      description: >
+        Admin/HR-authenticated. Corrects pay period, basic salary, and/or salary components.
+        employeeId cannot be changed. Salary components are replaced atomically when provided.
+        grossSalary, deductions, and netSalary are recalculated on the server.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePayrollRequest"
+      responses:
+        "200":
+          description: Payroll record updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PayrollRecord"
+        "400":
+          description: Invalid payroll details
+        "401":
+          description: Authentication required
+        "403":
+          description: Admin/HR access required
+        "404":
+          description: Payroll record not found
+        "409":
+          description: Payroll record already exists for this employee and pay period
+
 components:
   securitySchemes:
     bearerAuth:
@@ -670,3 +842,83 @@ components:
         extraHours: { type: number, nullable: true }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
+
+    SalaryComponentType:
+      type: string
+      enum: [EARNING, DEDUCTION]
+      description: EARNING increases gross salary. DEDUCTION decreases net salary.
+
+    SalaryComponent:
+      type: object
+      required: [id, payrollId, name, type, amount]
+      properties:
+        id: { type: string }
+        payrollId: { type: string }
+        name: { type: string, minLength: 1 }
+        type: { $ref: "#/components/schemas/SalaryComponentType" }
+        amount: { type: number, minimum: 0 }
+
+    SalaryComponentInput:
+      type: object
+      required: [name, type, amount]
+      additionalProperties: false
+      properties:
+        name: { type: string, minLength: 1 }
+        type: { $ref: "#/components/schemas/SalaryComponentType" }
+        amount: { type: number, minimum: 0 }
+
+    PayrollRecord:
+      type: object
+      required:
+        - id
+        - employeeId
+        - payPeriodStart
+        - payPeriodEnd
+        - basicSalary
+        - grossSalary
+        - deductions
+        - netSalary
+        - createdAt
+        - components
+      properties:
+        id: { type: string }
+        employeeId: { type: string }
+        payPeriodStart: { type: string, format: date }
+        payPeriodEnd: { type: string, format: date }
+        basicSalary: { type: number, minimum: 0 }
+        grossSalary: { type: number }
+        deductions: { type: number, minimum: 0 }
+        netSalary: { type: number }
+        createdAt: { type: string, format: date-time }
+        components:
+          type: array
+          items:
+            $ref: "#/components/schemas/SalaryComponent"
+        employee:
+          $ref: "#/components/schemas/LeaveEmployeeSummary"
+
+    CreatePayrollRequest:
+      type: object
+      required: [employeeId, payPeriodStart, payPeriodEnd, basicSalary]
+      additionalProperties: false
+      properties:
+        employeeId: { type: string, minLength: 1 }
+        payPeriodStart: { type: string, format: date }
+        payPeriodEnd: { type: string, format: date }
+        basicSalary: { type: number, minimum: 0 }
+        components:
+          type: array
+          items:
+            $ref: "#/components/schemas/SalaryComponentInput"
+
+    UpdatePayrollRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        payPeriodStart: { type: string, format: date }
+        payPeriodEnd: { type: string, format: date }
+        basicSalary: { type: number, minimum: 0 }
+        components:
+          type: array
+          items:
+            $ref: "#/components/schemas/SalaryComponentInput"

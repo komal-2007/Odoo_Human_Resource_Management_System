@@ -25,6 +25,7 @@ import type {
   ChangePasswordRequest,
   CreateEmployeeRequest,
   CreateLeaveRequest,
+  CreatePayrollRequest,
   EmployeeProfile,
   GetMyAttendanceParams,
   HealthStatus,
@@ -32,8 +33,10 @@ import type {
   LeaveRequest,
   ListAttendanceParams,
   LoginRequest,
+  PayrollRecord,
   UpdateEmployeeRequest,
   UpdateMyEmployeeProfileRequest,
+  UpdatePayrollRequest,
   UserResponse
 } from './api.schemas';
 
@@ -1394,3 +1397,466 @@ export function useListAttendance<TData = Awaited<ReturnType<typeof listAttendan
 
   return withQueryKey(query, queryOptions.queryKey);
 }
+
+
+
+
+
+
+
+export const getListMyPayrollUrl = () => {
+
+
+
+
+  return `/api/payroll/me`
+}
+
+/**
+ * Employee-authenticated. Returns payroll records belonging only to the current employee, newest pay periods first, including salary components. Gross salary, deductions, and net salary are server-calculated.
+ * @summary List my payroll records
+ */
+export const listMyPayroll = async ( options?: Parameters<typeof customFetch>[1]): Promise<PayrollRecord[]> => {
+
+  return customFetch<PayrollRecord[]>(getListMyPayrollUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListMyPayrollQueryKey = () => {
+    return [
+    `/api/payroll/me`
+    ] as const;
+    }
+
+
+export const getListMyPayrollQueryOptions = <TData = Awaited<ReturnType<typeof listMyPayroll>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMyPayroll>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListMyPayrollQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listMyPayroll>>> = ({ signal }) => listMyPayroll({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listMyPayroll>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListMyPayrollQueryResult = NonNullable<Awaited<ReturnType<typeof listMyPayroll>>>
+export type ListMyPayrollQueryError = ErrorType<void>
+
+
+/**
+ * @summary List my payroll records
+ */
+
+export function useListMyPayroll<TData = Awaited<ReturnType<typeof listMyPayroll>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMyPayroll>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListMyPayrollQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetMyPayrollUrl = (id: string,) => {
+
+
+
+
+  return `/api/payroll/me/${id}`
+}
+
+/**
+ * Employee-authenticated. Returns a payroll record only if it belongs to the current employee. Records for other employees are not distinguished from missing records.
+ * @summary Get one of my payroll records
+ */
+export const getMyPayroll = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<PayrollRecord> => {
+
+  return customFetch<PayrollRecord>(getGetMyPayrollUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetMyPayrollQueryKey = (id: string,) => {
+    return [
+    `/api/payroll/me/${id}`
+    ] as const;
+    }
+
+
+export const getGetMyPayrollQueryOptions = <TData = Awaited<ReturnType<typeof getMyPayroll>>, TError = ErrorType<void>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMyPayroll>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMyPayrollQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMyPayroll>>> = ({ signal }) => getMyPayroll(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMyPayroll>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetMyPayrollQueryResult = NonNullable<Awaited<ReturnType<typeof getMyPayroll>>>
+export type GetMyPayrollQueryError = ErrorType<void>
+
+
+/**
+ * @summary Get one of my payroll records
+ */
+
+export function useGetMyPayroll<TData = Awaited<ReturnType<typeof getMyPayroll>>, TError = ErrorType<void>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMyPayroll>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetMyPayrollQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListPayrollUrl = () => {
+
+
+
+
+  return `/api/payroll`
+}
+
+/**
+ * Admin/HR-authenticated. Returns all payroll records with employee summaries and salary components, newest pay periods first.
+ * @summary List all payroll records
+ */
+export const listPayroll = async ( options?: Parameters<typeof customFetch>[1]): Promise<PayrollRecord[]> => {
+
+  return customFetch<PayrollRecord[]>(getListPayrollUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListPayrollQueryKey = () => {
+    return [
+    `/api/payroll`
+    ] as const;
+    }
+
+
+export const getListPayrollQueryOptions = <TData = Awaited<ReturnType<typeof listPayroll>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listPayroll>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListPayrollQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listPayroll>>> = ({ signal }) => listPayroll({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listPayroll>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListPayrollQueryResult = NonNullable<Awaited<ReturnType<typeof listPayroll>>>
+export type ListPayrollQueryError = ErrorType<void>
+
+
+/**
+ * @summary List all payroll records
+ */
+
+export function useListPayroll<TData = Awaited<ReturnType<typeof listPayroll>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listPayroll>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListPayrollQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreatePayrollUrl = () => {
+
+
+
+
+  return `/api/payroll`
+}
+
+/**
+ * Admin/HR-authenticated. Creates a payroll record and its salary components atomically. EARNING components increase gross salary; DEDUCTION components decrease net salary. grossSalary, deductions, and netSalary are calculated on the server and must not be supplied by the client.
+ * @summary Create a payroll record
+ */
+export const createPayroll = async (createPayrollRequest: CreatePayrollRequest, options?: Parameters<typeof customFetch>[1]): Promise<PayrollRecord> => {
+
+  return customFetch<PayrollRecord>(getCreatePayrollUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createPayrollRequest)
+  }
+);}
+
+
+
+
+
+export const getCreatePayrollMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPayroll>>, TError,{data: BodyType<CreatePayrollRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createPayroll>>, TError,{data: BodyType<CreatePayrollRequest>}, TContext> => {
+
+const mutationKey = ['createPayroll'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPayroll>>, {data: BodyType<CreatePayrollRequest>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createPayroll(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreatePayrollMutationResult = NonNullable<Awaited<ReturnType<typeof createPayroll>>>
+    export type CreatePayrollMutationBody = BodyType<CreatePayrollRequest>
+    export type CreatePayrollMutationError = ErrorType<void>
+
+    /**
+ * @summary Create a payroll record
+ */
+export const useCreatePayroll = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPayroll>>, TError,{data: BodyType<CreatePayrollRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createPayroll>>,
+        TError,
+        {data: BodyType<CreatePayrollRequest>},
+        TContext
+      > => {
+      return useMutation(getCreatePayrollMutationOptions(options));
+    }
+
+export const getGetPayrollUrl = (id: string,) => {
+
+
+
+
+  return `/api/payroll/${id}`
+}
+
+/**
+ * Admin/HR-authenticated. Returns one payroll record with employee information and salary components.
+ * @summary Get a payroll record
+ */
+export const getPayroll = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<PayrollRecord> => {
+
+  return customFetch<PayrollRecord>(getGetPayrollUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPayrollQueryKey = (id: string,) => {
+    return [
+    `/api/payroll/${id}`
+    ] as const;
+    }
+
+
+export const getGetPayrollQueryOptions = <TData = Awaited<ReturnType<typeof getPayroll>>, TError = ErrorType<void>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPayroll>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPayrollQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPayroll>>> = ({ signal }) => getPayroll(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPayroll>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPayrollQueryResult = NonNullable<Awaited<ReturnType<typeof getPayroll>>>
+export type GetPayrollQueryError = ErrorType<void>
+
+
+/**
+ * @summary Get a payroll record
+ */
+
+export function useGetPayroll<TData = Awaited<ReturnType<typeof getPayroll>>, TError = ErrorType<void>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPayroll>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPayrollQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdatePayrollUrl = (id: string,) => {
+
+
+
+
+  return `/api/payroll/${id}`
+}
+
+/**
+ * Admin/HR-authenticated. Corrects pay period, basic salary, and/or salary components. employeeId cannot be changed. Salary components are replaced atomically when provided. grossSalary, deductions, and netSalary are recalculated on the server.
+ * @summary Update a payroll record
+ */
+export const updatePayroll = async (id: string,
+    updatePayrollRequest: UpdatePayrollRequest, options?: Parameters<typeof customFetch>[1]): Promise<PayrollRecord> => {
+
+  return customFetch<PayrollRecord>(getUpdatePayrollUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updatePayrollRequest)
+  }
+);}
+
+
+
+
+
+export const getUpdatePayrollMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePayroll>>, TError,{id: string;data: BodyType<UpdatePayrollRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updatePayroll>>, TError,{id: string;data: BodyType<UpdatePayrollRequest>}, TContext> => {
+
+const mutationKey = ['updatePayroll'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePayroll>>, {id: string;data: BodyType<UpdatePayrollRequest>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updatePayroll(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdatePayrollMutationResult = NonNullable<Awaited<ReturnType<typeof updatePayroll>>>
+    export type UpdatePayrollMutationBody = BodyType<UpdatePayrollRequest>
+    export type UpdatePayrollMutationError = ErrorType<void>
+
+    /**
+ * @summary Update a payroll record
+ */
+export const useUpdatePayroll = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePayroll>>, TError,{id: string;data: BodyType<UpdatePayrollRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updatePayroll>>,
+        TError,
+        {id: string;data: BodyType<UpdatePayrollRequest>},
+        TContext
+      > => {
+      return useMutation(getUpdatePayrollMutationOptions(options));
+    }
