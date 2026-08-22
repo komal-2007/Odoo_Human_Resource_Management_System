@@ -231,6 +231,9 @@ importers:
       thread-stream:
         specifier: 3.1.0
         version: 3.1.0
+      zod:
+        specifier: 'catalog:'
+        version: 3.25.76
 
   artifacts/mockup-sandbox:
     devDependencies:
@@ -438,16 +441,25 @@ importers:
       '@prisma/client':
         specifier: ^6.19.0
         version: 6.19.3(prisma@6.19.3(typescript@5.9.3))(typescript@5.9.3)
+      bcrypt:
+        specifier: ^6.0.0
+        version: 6.0.0
       dotenv:
         specifier: ^17.2.3
         version: 17.4.2
     devDependencies:
+      '@types/bcrypt':
+        specifier: ^6.0.0
+        version: 6.0.0
       '@types/node':
         specifier: 'catalog:'
         version: 25.9.5
       prisma:
         specifier: ^6.19.0
         version: 6.19.3(typescript@5.9.3)
+      tsx:
+        specifier: 'catalog:'
+        version: 4.23.1
 
   scripts:
     devDependencies:

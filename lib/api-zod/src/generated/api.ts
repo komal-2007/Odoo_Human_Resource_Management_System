@@ -18,3 +18,80 @@ export const HealthCheckResponse = zod.object({
 })
 
 
+/**
+ * @summary Log in with a Login ID or email
+ */
+
+export const loginBodyPasswordMin = 8;
+
+
+
+export const LoginBody = zod.object({
+  "loginId": zod.string().min(1),
+  "password": zod.string().min(loginBodyPasswordMin)
+})
+
+export const LoginResponse = zod.object({
+  "token": zod.string(),
+  "user": zod.object({
+  "id": zod.string(),
+  "loginId": zod.string(),
+  "email": zod.string().describe('Valid email address'),
+  "role": zod.enum(['ADMIN', 'EMPLOYEE']),
+  "mustChangePassword": zod.boolean().optional()
+})
+})
+
+
+export const GetCurrentUserResponse = zod.object({
+  "id": zod.string(),
+  "loginId": zod.string(),
+  "email": zod.string().describe('Valid email address'),
+  "role": zod.enum(['ADMIN', 'EMPLOYEE']),
+  "mustChangePassword": zod.boolean().optional()
+})
+
+
+
+export const changePasswordBodyNewPasswordMin = 8;
+
+
+
+export const ChangePasswordBody = zod.object({
+  "currentPassword": zod.string().min(1),
+  "newPassword": zod.string().min(changePasswordBodyNewPasswordMin)
+})
+
+export const ChangePasswordResponse = zod.unknown()
+
+
+export const ListEmployeesResponse = zod.unknown()
+
+
+export const createEmployeeBodyFirstNameMax = 80;
+
+export const createEmployeeBodyLastNameMax = 80;
+
+export const createEmployeeBodyEmployeeCodeMax = 40;
+
+export const createEmployeeBodyPhoneMax = 30;
+
+export const createEmployeeBodyDepartmentMax = 100;
+
+export const createEmployeeBodyJobTitleMax = 100;
+
+
+
+export const CreateEmployeeBody = zod.object({
+  "email": zod.string().describe('Valid email address'),
+  "firstName": zod.string().min(1).max(createEmployeeBodyFirstNameMax),
+  "lastName": zod.string().min(1).max(createEmployeeBodyLastNameMax),
+  "employeeCode": zod.string().min(1).max(createEmployeeBodyEmployeeCodeMax),
+  "phone": zod.string().max(createEmployeeBodyPhoneMax).optional(),
+  "department": zod.string().max(createEmployeeBodyDepartmentMax).optional(),
+  "jobTitle": zod.string().max(createEmployeeBodyJobTitleMax).optional()
+})
+
+export const CreateEmployeeResponse = zod.void()
+
+

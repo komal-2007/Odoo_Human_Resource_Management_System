@@ -1,0 +1,71 @@
+Now implement the authentication and authorization milestone for the backend only.
+
+IMPORTANT:
+- Do NOT build or modify any frontend/UI.
+- Follow the existing Dayflow project structure and Prisma schema.
+- Do not remove or break the existing database health check.
+- Do not change the technology stack.
+
+Implement the following:
+
+1. ADMIN/HR-CREATED EMPLOYEE ACCOUNTS
+- Employees should NOT freely register themselves.
+- Admin/HR should be able to create employee accounts.
+- Store employee information securely in PostgreSQL.
+- Generate a unique Login ID for each employee according to the Dayflow HRMS requirements.
+- Generate a secure initial password for newly created employees.
+- Store only the hashed password in the database.
+- Allow employees to change their password after logging in.
+
+2. LOGIN
+- Create a login API using Login ID/email and password.
+- Verify the password using bcrypt.
+- Return a JWT after successful login.
+- Return clear error responses for invalid credentials.
+
+3. JWT AUTHENTICATION
+- Create JWT authentication middleware.
+- Protect routes that require a logged-in user.
+- Include the user's ID and role in the authenticated request.
+
+4. ROLE-BASED AUTHORIZATION
+Support these roles:
+- ADMIN/HR
+- EMPLOYEE
+
+Create authorization middleware so that:
+- Admin/HR can access employee-management functionality.
+- Employees can access only their own protected information.
+- Employees cannot access Admin-only endpoints.
+
+5. VALIDATION AND ERRORS
+- Use the existing Zod setup for request validation.
+- Add proper validation for login and employee creation.
+- Return consistent HTTP status codes and JSON error responses.
+- Do not expose passwords or password hashes in API responses.
+
+6. API DOCUMENTATION
+Update the existing OpenAPI specification for all new authentication and authorization endpoints.
+
+7. TESTING
+Test the authentication flow and role-based access.
+Test:
+- Successful login
+- Incorrect password
+- Non-existent user
+- Admin/HR access
+- Employee access
+- Unauthorized access
+- Employee attempting an Admin-only endpoint
+
+Run the backend typecheck and make sure the existing health endpoint still returns database: true.
+
+At the end, give me:
+1. A list of files created/modified.
+2. Every new API endpoint with HTTP method and path.
+3. Request body for each endpoint.
+4. Response body for each endpoint.
+5. Which role can access each endpoint.
+6. A summary of tests performed and whether they passed.
+
+Do NOT commit or push anything to GitHub. I will handle the Git commit and push myself after reviewing the changes.

@@ -6,5 +6,11 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './authResponse';
+export * from './changePasswordRequest';
+export * from './createEmployeeRequest';
 export * from './healthStatus';
 export * from './healthStatusStatus';
+export * from './loginRequest';
+export * from './userResponse';
+export * from './userResponseRole';

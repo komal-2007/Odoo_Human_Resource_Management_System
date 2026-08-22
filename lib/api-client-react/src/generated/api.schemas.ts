@@ -18,3 +18,65 @@ export interface HealthStatus {
   database: boolean;
 }
 
+export interface LoginRequest {
+  /** @minLength 1 */
+  loginId: string;
+  /** @minLength 8 */
+  password: string;
+}
+
+export interface ChangePasswordRequest {
+  /** @minLength 1 */
+  currentPassword: string;
+  /** @minLength 8 */
+  newPassword: string;
+}
+
+export interface CreateEmployeeRequest {
+  /** Valid email address */
+  email: string;
+  /**
+     * @minLength 1
+     * @maxLength 80
+     */
+  firstName: string;
+  /**
+     * @minLength 1
+     * @maxLength 80
+     */
+  lastName: string;
+  /**
+     * @minLength 1
+     * @maxLength 40
+     */
+  employeeCode: string;
+  /** @maxLength 30 */
+  phone?: string;
+  /** @maxLength 100 */
+  department?: string;
+  /** @maxLength 100 */
+  jobTitle?: string;
+}
+
+export type UserResponseRole = typeof UserResponseRole[keyof typeof UserResponseRole];
+
+
+export const UserResponseRole = {
+  ADMIN: 'ADMIN',
+  EMPLOYEE: 'EMPLOYEE',
+} as const;
+
+export interface UserResponse {
+  id: string;
+  loginId: string;
+  /** Valid email address */
+  email: string;
+  role: UserResponseRole;
+  mustChangePassword?: boolean;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: UserResponse;
+}
+

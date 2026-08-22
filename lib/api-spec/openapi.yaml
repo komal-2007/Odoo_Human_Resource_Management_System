@@ -10,6 +10,10 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication and account operations
+  - name: employees
+    description: Admin/HR employee management
 paths:
   /healthz:
     get:
@@ -30,7 +34,85 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Log in with a Login ID or email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+  /auth/me:
+    get:
+      operationId: getCurrentUser
+      tags: [auth]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: Current authenticated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+  /auth/change-password:
+    post:
+      operationId: changePassword
+      tags: [auth]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePasswordRequest"
+      responses:
+        "200":
+          description: Password changed
+        "400":
+          description: Invalid password
+  /employees:
+    get:
+      operationId: listEmployees
+      tags: [employees]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: Employee accounts
+    post:
+      operationId: createEmployee
+      tags: [employees]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEmployeeRequest"
+      responses:
+        "201":
+          description: Employee account created
+        "400":
+          description: Invalid employee details
+        "403":
+          description: Admin/HR access required
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     HealthStatus:
       type: object
@@ -43,4 +125,42 @@ components:
       required:
         - status
         - database
+    LoginRequest:
+      type: object
+      required: [loginId, password]
+      properties:
+        loginId: { type: string, minLength: 1 }
+        password: { type: string, minLength: 8 }
+    ChangePasswordRequest:
+      type: object
+      required: [currentPassword, newPassword]
+      properties:
+        currentPassword: { type: string, minLength: 1 }
+        newPassword: { type: string, minLength: 8 }
+    CreateEmployeeRequest:
+      type: object
+      required: [email, firstName, lastName, employeeCode]
+      properties:
+        email: { type: string, description: Valid email address }
+        firstName: { type: string, minLength: 1, maxLength: 80 }
+        lastName: { type: string, minLength: 1, maxLength: 80 }
+        employeeCode: { type: string, minLength: 1, maxLength: 40 }
+        phone: { type: string, maxLength: 30 }
+        department: { type: string, maxLength: 100 }
+        jobTitle: { type: string, maxLength: 100 }
+    UserResponse:
+      type: object
+      required: [id, loginId, email, role]
+      properties:
+        id: { type: string }
+        loginId: { type: string }
+        email: { type: string, description: Valid email address }
+        role: { type: string, enum: [ADMIN, EMPLOYEE] }
+        mustChangePassword: { type: boolean }
+    AuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token: { type: string }
+        user: { $ref: "#/components/schemas/UserResponse" }
 

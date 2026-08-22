@@ -30,5 +30,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
+app.use((error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  if (error instanceof Error && error.name === "ZodError") {
+    res.status(400).json({ error: "Request validation failed.", details: error.message });
+    return;
+  }
+  logger.error({ err: error }, "Unhandled request error");
+  res.status(500).json({ error: "Internal server error." });
+});
 
 export default app;
