@@ -6,7 +6,7 @@ import { useState } from "react"
 const navItems = [
   { label: "Employees", page: "employees", active: true },
   { label: "Attendance", page: "attendance", active: true },
-  { label: "Time Off", page: "timeoff", active: false },
+  { label: "Time Off", page: "timeoff", active: true },
 ]
 
 export default function Navbar({ currentPage, onNavigate, checkedIn }) {

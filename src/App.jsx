@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar"
 import Employees from "./pages/Employees"
 import EmployeeProfile from "./pages/EmployeeProfile"
 import Attendance from "./pages/Attendance"
+import TimeOff from "./pages/TimeOff"
 
 // Three screens exist so far: the Employees grid (landing page), the
 // Employee Profile page it opens into, and the Attendance page.
@@ -70,6 +71,8 @@ export default function App() {
             onCheckOut={handleCheckOut}
           />
         )}
+
+        {page === "timeoff" && <TimeOff />}
       </main>
     </div>
   )
