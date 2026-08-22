@@ -14,6 +14,8 @@ tags:
     description: Authentication and account operations
   - name: employees
     description: Admin/HR employee management
+  - name: leave
+    description: Employee leave requests and Admin/HR decisions
 paths:
   /healthz:
     get:
