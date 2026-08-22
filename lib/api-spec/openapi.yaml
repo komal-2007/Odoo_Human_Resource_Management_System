@@ -24,6 +24,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+        "503":
+          description: Server is running but the database is unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
 components:
   schemas:
     HealthStatus:
@@ -31,6 +37,10 @@ components:
       properties:
         status:
           type: string
+          enum: [ok, degraded]
+        database:
+          type: boolean
       required:
         - status
+        - database
 

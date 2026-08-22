@@ -1,6 +1,6 @@
-# [Project name]
+# Dayflow - Human Resource Management System
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Backend foundation for employee management, attendance, leave, and payroll workflows.
 
 ## Run & Operate
 
@@ -8,29 +8,35 @@ _Replace the heading above with the project's name, and this line with one sente
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- `pnpm --filter @workspace/db run generate` — generate Prisma Client
+- `pnpm --filter @workspace/db run push` — push the Prisma schema to a development database
+- Required env: `DATABASE_URL` — PostgreSQL connection string
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
 - API: Express 5
-- DB: PostgreSQL + Drizzle ORM
+- DB: PostgreSQL + Prisma ORM
 - Validation: Zod (`zod/v4`), `drizzle-zod`
 - API codegen: Orval (from OpenAPI spec)
 - Build: esbuild (CJS bundle)
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/api-server/src/` — Express application, routes, and server entry point
+- `lib/db/prisma/schema.prisma` — source of truth for the database schema
+- `lib/db/src/index.ts` — shared Prisma client and connectivity check
+- `lib/api-spec/` — OpenAPI contracts for future API expansion
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The API is mounted at `/api`; the initial health endpoint is `/api/healthz`.
+- Database failures are reported as HTTP 503 with `status: "degraded"` rather than hidden.
+- The schema is intentionally foundational: it models identity, employee profiles, attendance, leave, payroll, and salary components without implementing all business endpoints yet.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Dayflow will support HR officers and employees with role-aware employee management, attendance, leave approvals, and payroll data.
 
 ## User preferences
 

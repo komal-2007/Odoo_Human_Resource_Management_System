@@ -1,0 +1,1 @@
+- [Backend foundation](backend-foundation.md) — Prisma/PostgreSQL is the persistence source of truth; expand APIs incrementally behind `/api`.

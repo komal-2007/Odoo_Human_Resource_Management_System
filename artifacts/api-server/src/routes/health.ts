@@ -1,11 +1,16 @@
 import { Router, type IRouter } from "express";
 import { HealthCheckResponse } from "@workspace/api-zod";
+import { checkDatabaseConnection } from "@workspace/db";
 
 const router: IRouter = Router();
 
-router.get("/healthz", (_req, res) => {
-  const data = HealthCheckResponse.parse({ status: "ok" });
-  res.json(data);
+router.get("/healthz", async (_req, res) => {
+  const database = await checkDatabaseConnection();
+  const data = HealthCheckResponse.parse({
+    status: database ? "ok" : "degraded",
+    database,
+  });
+  res.status(database ? 200 : 503).json({ ...data, database });
 });
 
 export default router;
