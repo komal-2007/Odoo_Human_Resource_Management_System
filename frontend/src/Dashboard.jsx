@@ -1,7 +1,8 @@
-import { useState } from "react";
-import "./App.css";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./Dashboard.css";
 
-const initialEmployees = [
+const employeesData = [
   {
     id: 1,
     name: "John Doe",
@@ -27,7 +28,7 @@ const initialEmployees = [
     department: "Engineering",
     email: "michael.brown@company.com",
     phone: "+91 98765 43212",
-    status: "absent",
+    status: "present",
   },
   {
     id: 4,
@@ -36,7 +37,7 @@ const initialEmployees = [
     department: "Human Resources",
     email: "emily.wilson@company.com",
     phone: "+91 98765 43213",
-    status: "present",
+    status: "absent",
   },
   {
     id: 5,
@@ -85,57 +86,138 @@ const initialEmployees = [
   },
 ];
 
+const attendanceData = [
+  {
+    date: "28/10/2025",
+    employee: "John Doe",
+    checkIn: "10:00",
+    checkOut: "19:00",
+    workHours: "09:00",
+    extraHours: "01:00",
+  },
+  {
+    date: "29/10/2025",
+    employee: "John Doe",
+    checkIn: "10:00",
+    checkOut: "19:00",
+    workHours: "09:00",
+    extraHours: "01:00",
+  },
+  {
+    date: "30/10/2025",
+    employee: "John Doe",
+    checkIn: "10:15",
+    checkOut: "19:00",
+    workHours: "08:45",
+    extraHours: "00:45",
+  },
+];
+
 function Dashboard() {
-  const [employees, setEmployees] = useState(initialEmployees);
+  const navigate = useNavigate();
+
   const [activeTab, setActiveTab] = useState("Employees");
   const [search, setSearch] = useState("");
+
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+
   const [profileOpen, setProfileOpen] = useState(false);
 
-  const filteredEmployees = employees.filter((employee) =>
+  const [checkedIn, setCheckedIn] = useState(false);
+  const [checkInTime, setCheckInTime] = useState(null);
+
+  const [userRole, setUserRole] = useState("admin");
+
+  const filteredEmployees = employeesData.filter((employee) =>
     employee.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  /* ===============================
+     CHECK IN
+  ================================ */
+
   const handleCheckIn = () => {
-    setEmployees((currentEmployees) =>
-      currentEmployees.map((employee) =>
-        employee.id === 1
-          ? { ...employee, status: "present" }
-          : employee
-      )
-    );
+    const now = new Date();
+
+    const time = now.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    setCheckedIn(true);
+    setCheckInTime(time);
   };
+
+  /* ===============================
+     CHECK OUT
+  ================================ */
 
   const handleCheckOut = () => {
-    setEmployees((currentEmployees) =>
-      currentEmployees.map((employee) =>
-        employee.id === 1
-          ? { ...employee, status: "absent" }
-          : employee
-      )
-    );
+    setCheckedIn(false);
   };
 
-  const getStatusLabel = (status) => {
-    if (status === "present") return "Present";
-    if (status === "leave") return "On Leave";
-    return "Absent";
+  /* ===============================
+     LOGOUT
+  ================================ */
+
+  const handleLogout = () => {
+    setProfileOpen(false);
+    navigate("/login");
+  };
+
+  /* ===============================
+     OPEN MY PROFILE
+  ================================ */
+
+  const handleMyProfile = () => {
+    setProfileOpen(false);
+
+    setSelectedEmployee({
+      id: 0,
+      name: "My Profile",
+      role: "Employee",
+      department: "General",
+      email: "employee@company.com",
+      phone: "+91 XXXXX XXXXX",
+    });
+
+    setActiveTab("Employees");
   };
 
   return (
-    <div className="app">
+    <div className="dashboard">
 
-      {/* ================= TOP NAVIGATION ================= */}
+      {/* =====================================================
+          TOP NAVBAR
+      ===================================================== */}
+
       <header className="top-navbar">
 
+        {/* COMPANY LOGO */}
+
         <div className="company-logo">
-          <div className="logo-mark">C</div>
-          <span>Company</span>
+
+          <div className="logo-box">
+            D
+          </div>
+
+          <span>
+            Dayflow
+          </span>
+
         </div>
 
+
+        {/* NAVIGATION */}
+
         <nav className="navigation">
+
           <button
-            className={activeTab === "Employees" ? "nav-link active" : "nav-link"}
+            className={
+              activeTab === "Employees"
+                ? "nav-link active"
+                : "nav-link"
+            }
             onClick={() => {
               setActiveTab("Employees");
               setSelectedEmployee(null);
@@ -144,8 +226,13 @@ function Dashboard() {
             Employees
           </button>
 
+
           <button
-            className={activeTab === "Attendance" ? "nav-link active" : "nav-link"}
+            className={
+              activeTab === "Attendance"
+                ? "nav-link active"
+                : "nav-link"
+            }
             onClick={() => {
               setActiveTab("Attendance");
               setSelectedEmployee(null);
@@ -154,8 +241,13 @@ function Dashboard() {
             Attendance
           </button>
 
+
           <button
-            className={activeTab === "Time Off" ? "nav-link active" : "nav-link"}
+            className={
+              activeTab === "Time Off"
+                ? "nav-link active"
+                : "nav-link"
+            }
             onClick={() => {
               setActiveTab("Time Off");
               setSelectedEmployee(null);
@@ -163,290 +255,788 @@ function Dashboard() {
           >
             Time Off
           </button>
+
         </nav>
 
-        <div className="profile-area">
 
-          <button
-            className="profile-avatar"
-            onClick={() => setProfileOpen(!profileOpen)}
-          >
-            <span>M</span>
-          </button>
+        {/* =====================================================
+            RIGHT SIDE
+        ===================================================== */}
 
-          {profileOpen && (
-            <div className="profile-dropdown">
-              <button
-                onClick={() => {
-                  setProfileOpen(false);
-                  setSelectedEmployee("profile");
-                }}
-              >
-                My Profile
-              </button>
+        <div className="navbar-right">
 
-              <button
-                onClick={() => setProfileOpen(false)}
-              >
-                Log Out
-              </button>
-            </div>
-          )}
+          {/* CHECK-IN STATUS */}
+
+          <div className="top-check-status">
+
+            <span
+              className={
+                checkedIn
+                  ? "top-status-dot online"
+                  : "top-status-dot offline"
+              }
+            ></span>
+
+            <span>
+              {checkedIn
+                ? "Checked In"
+                : "Not Checked In"}
+            </span>
+
+          </div>
+
+
+          {/* PROFILE */}
+
+          <div className="profile-container">
+
+            <button
+              className="profile-avatar"
+              onClick={() =>
+                setProfileOpen(!profileOpen)
+              }
+            >
+              M
+            </button>
+
+
+            {profileOpen && (
+
+              <div className="profile-dropdown">
+
+                <button
+                  onClick={handleMyProfile}
+                >
+                  My Profile
+                </button>
+
+
+                <button
+                  onClick={handleLogout}
+                >
+                  Log Out
+                </button>
+
+              </div>
+
+            )}
+
+          </div>
 
         </div>
+
       </header>
 
-      {/* ================= MAIN AREA ================= */}
-      <main className="main-wrapper">
 
-        {/* ================= EMPLOYEES PAGE ================= */}
-        {activeTab === "Employees" && !selectedEmployee && (
-          <>
-            <div className="toolbar">
+      {/* =====================================================
+          MAIN CONTENT
+      ===================================================== */}
 
-              <button className="new-button">
-                NEW
+      <main className="main-content">
+
+
+        {/* =====================================================
+            EMPLOYEES PAGE
+        ===================================================== */}
+
+        {activeTab === "Employees" &&
+          !selectedEmployee && (
+
+            <section className="employees-section">
+
+              {/* HEADER */}
+
+              <div className="page-header">
+
+                <button className="new-button">
+                  NEW
+                </button>
+
+
+                <div className="search-container">
+
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    value={search}
+                    onChange={(e) =>
+                      setSearch(e.target.value)
+                    }
+                  />
+
+                </div>
+
+              </div>
+
+
+              {/* EMPLOYEE CARDS */}
+
+              <div className="employee-grid">
+
+                {filteredEmployees.map(
+                  (employee) => (
+
+                    <div
+                      className="employee-card"
+                      key={employee.id}
+                      onClick={() =>
+                        setSelectedEmployee(
+                          employee
+                        )
+                      }
+                    >
+
+                      <div className="employee-top">
+
+                        <div className="employee-photo">
+                          👤
+                        </div>
+
+
+                        <span
+                          className={`status-dot ${employee.status}`}
+                        ></span>
+
+                      </div>
+
+
+                      <div className="employee-name">
+                        {employee.name}
+                      </div>
+
+
+                      <div className="employee-role">
+                        {employee.role}
+                      </div>
+
+
+                      <div className="employee-department">
+                        {employee.department}
+                      </div>
+
+                    </div>
+
+                  )
+                )}
+
+              </div>
+
+            </section>
+
+          )}
+
+
+        {/* =====================================================
+            EMPLOYEE INFORMATION / MY PROFILE
+        ===================================================== */}
+
+        {activeTab === "Employees" &&
+          selectedEmployee && (
+
+            <section className="employee-details-page">
+
+              <button
+                className="back-button"
+                onClick={() =>
+                  setSelectedEmployee(null)
+                }
+              >
+                ← Back
               </button>
 
-              <div className="search-wrapper">
+
+              <div className="employee-details-card">
+
+                <div className="details-profile">
+
+                  <div className="large-profile">
+                    👤
+                  </div>
+
+
+                  <div>
+
+                    <h2>
+                      {selectedEmployee.name}
+                    </h2>
+
+                    <p>
+                      {selectedEmployee.role}
+                    </p>
+
+                  </div>
+
+                </div>
+
+
+                <div className="details-divider"></div>
+
+
+                <div className="details-grid">
+
+                  <div>
+
+                    <label>
+                      Department
+                    </label>
+
+                    <p>
+                      {selectedEmployee.department}
+                    </p>
+
+                  </div>
+
+
+                  <div>
+
+                    <label>
+                      Email
+                    </label>
+
+                    <p>
+                      {selectedEmployee.email}
+                    </p>
+
+                  </div>
+
+
+                  <div>
+
+                    <label>
+                      Phone
+                    </label>
+
+                    <p>
+                      {selectedEmployee.phone}
+                    </p>
+
+                  </div>
+
+
+                  <div>
+
+                    <label>
+                      Employee ID
+                    </label>
+
+                    <p>
+                      EMP-
+                      {String(
+                        selectedEmployee.id || 1
+                      ).padStart(3, "0")}
+                    </p>
+
+                  </div>
+
+                </div>
+
+
+                {/* VIEW ONLY */}
+
+                <div className="view-only-label">
+                  View Only
+                </div>
+
+              </div>
+
+            </section>
+
+          )}
+
+
+        {/* =====================================================
+            ATTENDANCE PAGE
+        ===================================================== */}
+
+        {activeTab === "Attendance" && (
+
+          <section className="attendance-section">
+
+            {/* HEADER */}
+
+            <div className="attendance-header">
+
+              <h2>
+                Attendance
+              </h2>
+
+
+              <div className="attendance-search">
+
                 <input
                   type="text"
-                  placeholder="Search"
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Searchbar"
                 />
+
               </div>
 
             </div>
 
-            <div className="employee-grid">
 
-              {filteredEmployees.map((employee) => (
-                <button
-                  className="employee-card"
-                  key={employee.id}
-                  onClick={() => setSelectedEmployee(employee)}
-                >
+            {/* TOOLBAR */}
 
-                  <div className="card-status">
-                    <span className={`status-dot ${employee.status}`}></span>
-                  </div>
+            <div className="attendance-toolbar">
 
-                  <div className="employee-image">
-                    <div className="person-icon">
-                      <div className="person-head"></div>
-                      <div className="person-body"></div>
-                    </div>
-                  </div>
+              <button>
+                ←
+              </button>
 
-                  <div className="employee-name">
-                    {employee.name}
-                  </div>
+              <button>
+                →
+              </button>
 
-                </button>
-              ))}
+              <button className="date-button">
+                Date ▾
+              </button>
+
+              <button className="day-button">
+                Day
+              </button>
 
             </div>
 
-            <div className="settings-text">
-              Settings
+
+            {/* ROLE SWITCH */}
+
+            <div className="role-switch">
+
+              <span>
+
+                Viewing as:
+
+                <strong>
+                  {userRole === "admin"
+                    ? " Admin / HR Officer"
+                    : " Employee"}
+                </strong>
+
+              </span>
+
+
+              <button
+                onClick={() =>
+                  setUserRole(
+                    userRole === "admin"
+                      ? "employee"
+                      : "admin"
+                  )
+                }
+              >
+                Switch View
+              </button>
+
             </div>
-          </>
+
+
+            {/* =================================================
+                ADMIN / HR VIEW
+            ================================================= */}
+
+            {userRole === "admin" && (
+
+              <div className="attendance-table-wrapper">
+
+                <table className="attendance-table">
+
+                  <thead>
+
+                    <tr>
+
+                      <th>
+                        Employee
+                      </th>
+
+                      <th>
+                        Check In
+                      </th>
+
+                      <th>
+                        Check Out
+                      </th>
+
+                      <th>
+                        Work Hours
+                      </th>
+
+                      <th>
+                        Extra Hours
+                      </th>
+
+                    </tr>
+
+                  </thead>
+
+
+                  <tbody>
+
+                    {attendanceData.map(
+                      (record, index) => (
+
+                        <tr key={index}>
+
+                          <td>
+                            {record.employee}
+                          </td>
+
+                          <td>
+                            {record.checkIn}
+                          </td>
+
+                          <td>
+                            {record.checkOut}
+                          </td>
+
+                          <td>
+                            {record.workHours}
+                          </td>
+
+                          <td>
+                            {record.extraHours}
+                          </td>
+
+                        </tr>
+
+                      )
+                    )}
+
+                  </tbody>
+
+                </table>
+
+              </div>
+
+            )}
+
+
+            {/* =================================================
+                EMPLOYEE VIEW
+            ================================================= */}
+
+            {userRole === "employee" && (
+
+              <div className="employee-attendance">
+
+                <div className="attendance-summary">
+
+                  <div>
+
+                    <span>
+                      Count of days present
+                    </span>
+
+                    <strong>
+                      22
+                    </strong>
+
+                  </div>
+
+
+                  <div>
+
+                    <span>
+                      Leaves count
+                    </span>
+
+                    <strong>
+                      2
+                    </strong>
+
+                  </div>
+
+
+                  <div>
+
+                    <span>
+                      Total working days
+                    </span>
+
+                    <strong>
+                      24
+                    </strong>
+
+                  </div>
+
+                </div>
+
+
+                <div className="attendance-table-wrapper">
+
+                  <table className="attendance-table">
+
+                    <thead>
+
+                      <tr>
+
+                        <th>
+                          Date
+                        </th>
+
+                        <th>
+                          Check In
+                        </th>
+
+                        <th>
+                          Check Out
+                        </th>
+
+                        <th>
+                          Work Hours
+                        </th>
+
+                        <th>
+                          Extra Hours
+                        </th>
+
+                      </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                      {attendanceData.map(
+                        (record, index) => (
+
+                          <tr key={index}>
+
+                            <td>
+                              {record.date}
+                            </td>
+
+                            <td>
+                              {record.checkIn}
+                            </td>
+
+                            <td>
+                              {record.checkOut}
+                            </td>
+
+                            <td>
+                              {record.workHours}
+                            </td>
+
+                            <td>
+                              {record.extraHours}
+                            </td>
+
+                          </tr>
+
+                        )
+                      )}
+
+                    </tbody>
+
+                  </table>
+
+                </div>
+
+              </div>
+
+            )}
+
+          </section>
+
         )}
 
-        {/* ================= EMPLOYEE DETAILS ================= */}
-        {activeTab === "Employees" &&
-          selectedEmployee &&
-          selectedEmployee !== "profile" && (
 
-          <div className="details-page">
+        {/* =====================================================
+            TIME OFF
+        ===================================================== */}
 
-            <button
-              className="back-button"
-              onClick={() => setSelectedEmployee(null)}
-            >
-              ← Back to Employees
-            </button>
-
-            <div className="details-card">
-
-              <div className="details-avatar">
-                <div className="person-icon large">
-                  <div className="person-head"></div>
-                  <div className="person-body"></div>
-                </div>
-              </div>
-
-              <div className="details-content">
-
-                <div className="details-title">
-                  <div>
-                    <h1>{selectedEmployee.name}</h1>
-                    <p>{selectedEmployee.role}</p>
-                  </div>
-
-                  <span className={`detail-status ${selectedEmployee.status}`}>
-                    <span className={`status-dot ${selectedEmployee.status}`}></span>
-                    {getStatusLabel(selectedEmployee.status)}
-                  </span>
-                </div>
-
-                <div className="information-grid">
-
-                  <div>
-                    <label>Employee ID</label>
-                    <p>EMP-{String(selectedEmployee.id).padStart(3, "0")}</p>
-                  </div>
-
-                  <div>
-                    <label>Department</label>
-                    <p>{selectedEmployee.department}</p>
-                  </div>
-
-                  <div>
-                    <label>Email</label>
-                    <p>{selectedEmployee.email}</p>
-                  </div>
-
-                  <div>
-                    <label>Phone</label>
-                    <p>{selectedEmployee.phone}</p>
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-        )}
-
-        {/* ================= MY PROFILE ================= */}
-        {selectedEmployee === "profile" && (
-          <div className="details-page">
-
-            <button
-              className="back-button"
-              onClick={() => setSelectedEmployee(null)}
-            >
-              ← Back
-            </button>
-
-            <div className="details-card">
-
-              <div className="details-avatar">
-                <div className="profile-big-avatar">
-                  M
-                </div>
-              </div>
-
-              <div className="details-content">
-
-                <div className="details-title">
-                  <div>
-                    <h1>My Profile</h1>
-                    <p>Employee</p>
-                  </div>
-                </div>
-
-                <div className="information-grid">
-
-                  <div>
-                    <label>Name</label>
-                    <p>Employee Name</p>
-                  </div>
-
-                  <div>
-                    <label>Employee ID</label>
-                    <p>EMP-001</p>
-                  </div>
-
-                  <div>
-                    <label>Email</label>
-                    <p>employee@company.com</p>
-                  </div>
-
-                  <div>
-                    <label>Department</label>
-                    <p>Engineering</p>
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-        )}
-
-        {/* ================= ATTENDANCE ================= */}
-        {activeTab === "Attendance" && (
-          <div className="attendance-page">
-
-            <div className="page-heading">
-              <h1>Attendance</h1>
-              <p>Manage your daily attendance.</p>
-            </div>
-
-            <div className="attendance-actions">
-
-              <div className="attendance-box">
-                <span className="attendance-label">
-                  Check IN
-                </span>
-
-                <button
-                  className="check-button"
-                  onClick={handleCheckIn}
-                >
-                  Check IN →
-                </button>
-              </div>
-
-              <div className="attendance-box">
-                <span className="since-text">
-                  Since 09:00 AM
-                </span>
-
-                <button
-                  className="check-button"
-                  onClick={handleCheckOut}
-                >
-                  Check Out →
-                </button>
-              </div>
-
-            </div>
-
-          </div>
-        )}
-
-        {/* ================= TIME OFF ================= */}
         {activeTab === "Time Off" && (
-          <div className="timeoff-page">
 
-            <div className="page-heading">
-              <h1>Time Off</h1>
-              <p>View your leave and time-off information.</p>
-            </div>
+          <section className="timeoff-section">
 
-            <div className="timeoff-card">
-              <div>
-                <span>Available Time Off</span>
-                <strong>12 Days</strong>
-              </div>
+            <div className="timeoff-header">
 
               <button className="new-button">
                 NEW
               </button>
+
+
+              <input
+                type="text"
+                placeholder="Searchbar"
+              />
+
             </div>
 
-          </div>
+
+            <div className="leave-summary">
+
+              <div>
+
+                <span>
+                  Paid Time Off
+                </span>
+
+                <strong>
+                  24 Days Available
+                </strong>
+
+              </div>
+
+
+              <div>
+
+                <span>
+                  Sick Time Off
+                </span>
+
+                <strong>
+                  07 Days Available
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <div className="timeoff-table-wrapper">
+
+              <table className="timeoff-table">
+
+                <thead>
+
+                  <tr>
+
+                    <th>
+                      Name
+                    </th>
+
+                    <th>
+                      Start Date
+                    </th>
+
+                    <th>
+                      End Date
+                    </th>
+
+                    <th>
+                      Time Off Type
+                    </th>
+
+                    <th>
+                      Status
+                    </th>
+
+                  </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                  <tr>
+
+                    <td>
+                      Sarah Smith
+                    </td>
+
+                    <td>
+                      28/10/2025
+                    </td>
+
+                    <td>
+                      28/10/2025
+                    </td>
+
+                    <td>
+                      Paid Time Off
+                    </td>
+
+                    <td>
+
+                      <span className="pending">
+                        Pending
+                      </span>
+
+                    </td>
+
+                  </tr>
+
+
+                  <tr>
+
+                    <td>
+                      Michael Brown
+                    </td>
+
+                    <td>
+                      01/11/2025
+                    </td>
+
+                    <td>
+                      03/11/2025
+                    </td>
+
+                    <td>
+                      Sick Leave
+                    </td>
+
+                    <td>
+
+                      <span className="pending">
+                        Pending
+                      </span>
+
+                    </td>
+
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </section>
+
         )}
 
       </main>
+
+
+      {/* =====================================================
+          CHECK IN / CHECK OUT ACTION
+      ===================================================== */}
+
+      <div className="attendance-actions">
+
+        {!checkedIn ? (
+
+          <div className="check-card">
+
+            <button
+              className="check-in-button"
+              onClick={handleCheckIn}
+            >
+              Check IN →
+            </button>
+
+          </div>
+
+        ) : (
+
+          <div className="check-card checked">
+
+            <span>
+              Since {checkInTime}
+            </span>
+
+
+            <button
+              className="check-out-button"
+              onClick={handleCheckOut}
+            >
+              Check Out →
+            </button>
+
+          </div>
+
+        )}
+
+      </div>
 
     </div>
   );

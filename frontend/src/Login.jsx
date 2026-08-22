@@ -32,7 +32,7 @@ function Login() {
 
         <div className="brand">
           <div className="brand-icon">D</div>
-          <span>DayFlow</span>
+          <span>Dayflow</span>
         </div>
 
         <div className="welcome-content">
@@ -48,7 +48,7 @@ function Login() {
         </div>
 
         <div className="login-footer">
-          © 2026 DayFlow
+          © 2026 Dayflow
         </div>
 
       </div>
@@ -59,8 +59,8 @@ function Login() {
         <div className="login-card">
 
           <div className="mobile-brand">
-            <div className="brand-icon">D</div>
-            <span>DayFlow</span>
+            <div className="brand-icon">W</div>
+            <span>Workly</span>
           </div>
 
           <h2>Welcome back</h2>
@@ -122,7 +122,7 @@ function Login() {
           <p className="signup-text">
             Don't have an account?
             <button type="button">
-              Contact HR
+              Sign up
             </button>
           </p>
 
