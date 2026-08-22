@@ -2,12 +2,14 @@ import { useState } from "react"
 import { initialLeaveRequests, leaveAllocations } from "../data/timeOffData"
 import { employees } from "../data/mockData"
 
-export default function TimeOff() {
+export default function TimeOff({ currentUser }) {
   const [activeTab, setActiveTab] = useState("timeoff") // "timeoff" | "allocation"
   const [requests, setRequests] = useState(initialLeaveRequests)
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState("All") // "All" | "Pending" | "Approved" | "Rejected"
   const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const isAdmin = currentUser?.role === "admin"
 
   // New leave form state
   const [formData, setFormData] = useState({
@@ -18,8 +20,16 @@ export default function TimeOff() {
     reason: "",
   })
 
-  // Filter requests based on search query and status filter
-  const filteredRequests = requests.filter((req) => {
+  // Filter requests based on search query, status filter, and role
+  const displayedRequests = isAdmin
+    ? requests
+    : requests.filter(
+        (req) =>
+          req.employeeName.toLowerCase() === currentUser?.name?.toLowerCase() ||
+          req.employeeId === 1
+      )
+
+  const filteredRequests = displayedRequests.filter((req) => {
     const matchesSearch =
       req.employeeName.toLowerCase().includes(search.toLowerCase()) ||
       req.leaveType.toLowerCase().includes(search.toLowerCase()) ||
@@ -250,28 +260,34 @@ export default function TimeOff() {
                       </span>
                     </td>
 
-                    {/* Admin Action Buttons */}
+                    {/* Actions Column */}
                     <td className="px-5 py-3.5 text-right">
-                      {req.status === "Pending" ? (
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => handleApprove(req.id)}
-                            className="px-3 py-1 text-xs font-semibold rounded bg-brand-green/10 text-brand-green hover:bg-brand-green hover:text-base-bg transition-colors"
-                            title="Approve Leave Request"
-                          >
-                            Approve
-                          </button>
-                          <button
-                            onClick={() => handleReject(req.id)}
-                            className="px-3 py-1 text-xs font-semibold rounded bg-brand-red/10 text-brand-red hover:bg-brand-red hover:text-base-bg transition-colors"
-                            title="Reject Leave Request"
-                          >
-                            Reject
-                          </button>
-                        </div>
+                      {isAdmin ? (
+                        req.status === "Pending" ? (
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => handleApprove(req.id)}
+                              className="px-3 py-1 text-xs font-semibold rounded bg-brand-green/10 text-brand-green hover:bg-brand-green hover:text-base-bg transition-colors"
+                              title="Approve Leave Request"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => handleReject(req.id)}
+                              className="px-3 py-1 text-xs font-semibold rounded bg-brand-red/10 text-brand-red hover:bg-brand-red hover:text-base-bg transition-colors"
+                              title="Reject Leave Request"
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-ink-secondary italic">
+                            Resolved
+                          </span>
+                        )
                       ) : (
-                        <span className="text-xs text-ink-secondary italic">
-                          Resolved
+                        <span className="text-xs text-ink-secondary">
+                          {req.status === "Pending" ? "⏳ Awaiting HR Review" : "✓ Decision Recorded"}
                         </span>
                       )}
                     </td>

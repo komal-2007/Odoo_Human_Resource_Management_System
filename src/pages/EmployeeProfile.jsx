@@ -5,17 +5,14 @@ import PrivateInfoTab from "../components/profile/PrivateInfoTab"
 import SalaryInfoTab from "../components/profile/SalaryInfoTab"
 import SecurityTab from "../components/profile/SecurityTab"
 
-// This app only has an Admin/HR view for now, so Salary Info is
-// always visible here. If an employee-facing view is added later,
-// this flag is where that check would live.
-const isAdmin = true
-
 const tabs = ["Resume", "Private Info", "Salary Info", "Security"]
 
-export default function EmployeeProfile({ employeeId, onBack }) {
+export default function EmployeeProfile({ employeeId, onBack, currentUser }) {
   const [activeTab, setActiveTab] = useState("Resume")
 
   const employee = employees.find((emp) => emp.id === employeeId)
+  const isAdmin = currentUser?.role === "admin"
+  const isOwnProfile = currentUser?.loginId === employee?.loginId || currentUser?.email === employee?.privateInfo?.personalEmail
 
   if (!employee) {
     return (
@@ -31,7 +28,7 @@ export default function EmployeeProfile({ employeeId, onBack }) {
     )
   }
 
-  const visibleTabs = tabs.filter((tab) => tab !== "Salary Info" || isAdmin)
+  const visibleTabs = tabs.filter((tab) => tab !== "Salary Info" || isAdmin || isOwnProfile)
 
   return (
     <div className="p-8 space-y-6">
@@ -101,7 +98,7 @@ export default function EmployeeProfile({ employeeId, onBack }) {
       {/* Tab content */}
       {activeTab === "Resume" && <ResumeTab employee={employee} />}
       {activeTab === "Private Info" && <PrivateInfoTab employee={employee} />}
-      {activeTab === "Salary Info" && isAdmin && (
+      {activeTab === "Salary Info" && (isAdmin || isOwnProfile) && (
         <SalaryInfoTab employee={employee} />
       )}
       {activeTab === "Security" && <SecurityTab employee={employee} />}

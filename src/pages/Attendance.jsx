@@ -16,17 +16,25 @@ function formatDisplayDate(date) {
   })
 }
 
-export default function Attendance({ checkedIn, since, onCheckIn, onCheckOut }) {
+export default function Attendance({ checkedIn, since, onCheckIn, onCheckOut, currentUser }) {
   const [search, setSearch] = useState("")
-  // Mock "today" matches the seeded data so the page has something
-  // realistic to show on first load.
   const [selectedDate, setSelectedDate] = useState(new Date("2026-08-22"))
 
+  const isAdmin = currentUser?.role === "admin"
   const dateKey = toDateKey(selectedDate)
   const employeeIds = employees.map((emp) => emp.id)
   const attendanceForDate = getAttendanceForDate(dateKey, employeeIds)
 
-  const filteredEmployees = employees.filter((emp) =>
+  // In Employee mode, show only the current employee's record (or the first employee as fallback)
+  const displayedEmployees = isAdmin
+    ? employees
+    : employees.filter(
+        (emp) =>
+          emp.name.toLowerCase() === currentUser?.name?.toLowerCase() ||
+          emp.id === 1 // fallback to demonstrate personal view
+      )
+
+  const filteredEmployees = displayedEmployees.filter((emp) =>
     emp.name.toLowerCase().includes(search.toLowerCase())
   )
 

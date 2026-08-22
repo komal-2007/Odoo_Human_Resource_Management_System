@@ -4,20 +4,13 @@ import Employees from "./pages/Employees"
 import EmployeeProfile from "./pages/EmployeeProfile"
 import Attendance from "./pages/Attendance"
 import TimeOff from "./pages/TimeOff"
+import SignIn from "./pages/SignIn"
+import SignUp from "./pages/SignUp"
+import { getCurrentUser, logoutUser } from "./services/authService"
 
-// Three screens exist so far: the Employees grid (landing page), the
-// Employee Profile page it opens into, and the Attendance page.
-// `page` tracks which top-level nav section is open; within
-// "employees", `selectedEmployeeId` further tracks whether the grid
-// or a specific profile is shown. Time Off comes next, screen by
-// screen. Once there are more pages, this is where routing (e.g.
-// react-router) would take over from this simple state switch.
-//
-// Check-in/out status lives here (not in Attendance.jsx) so the
-// Navbar's status dot can reflect it too. Swapping this for a real
-// check-in API later just means replacing what handleCheckIn /
-// handleCheckOut do — no other component needs to change.
 export default function App() {
+  const [currentUser, setCurrentUser] = useState(() => getCurrentUser())
+  const [authMode, setAuthMode] = useState("signin") // "signin" | "signup"
   const [page, setPage] = useState("employees")
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null)
   const [checkedIn, setCheckedIn] = useState(false)
@@ -45,12 +38,52 @@ export default function App() {
     setSince(null)
   }
 
+  function handleAuthSuccess(user) {
+    setCurrentUser(user)
+    setPage("employees")
+  }
+
+  function handleLogout() {
+    logoutUser()
+    setCurrentUser(null)
+    setAuthMode("signin")
+  }
+
+  function handleToggleRole() {
+    if (!currentUser) return
+    const newRole = currentUser.role === "admin" ? "employee" : "admin"
+    const updatedUser = { ...currentUser, role: newRole }
+    setCurrentUser(updatedUser)
+    localStorage.setItem("workly_user", JSON.stringify(updatedUser))
+  }
+
+  // If user is not logged in, show the Auth screens (Sign In or Sign Up)
+  if (!currentUser) {
+    if (authMode === "signup") {
+      return (
+        <SignUp
+          onSignUpSuccess={handleAuthSuccess}
+          onNavigateToSignIn={() => setAuthMode("signin")}
+        />
+      )
+    }
+    return (
+      <SignIn
+        onSignInSuccess={handleAuthSuccess}
+        onNavigateToSignUp={() => setAuthMode("signup")}
+      />
+    )
+  }
+
   return (
     <div className="min-h-screen bg-base-bg text-ink-primary font-body">
       <Navbar
         currentPage={page}
         onNavigate={handleNavigate}
         checkedIn={checkedIn}
+        currentUser={currentUser}
+        onLogout={handleLogout}
+        onToggleRole={handleToggleRole}
       />
       <main>
         {page === "employees" &&
@@ -58,9 +91,13 @@ export default function App() {
             <EmployeeProfile
               employeeId={selectedEmployeeId}
               onBack={() => setSelectedEmployeeId(null)}
+              currentUser={currentUser}
             />
           ) : (
-            <Employees onSelectEmployee={setSelectedEmployeeId} />
+            <Employees
+              onSelectEmployee={setSelectedEmployeeId}
+              currentUser={currentUser}
+            />
           ))}
 
         {page === "attendance" && (
@@ -69,10 +106,11 @@ export default function App() {
             since={since}
             onCheckIn={handleCheckIn}
             onCheckOut={handleCheckOut}
+            currentUser={currentUser}
           />
         )}
 
-        {page === "timeoff" && <TimeOff />}
+        {page === "timeoff" && <TimeOff currentUser={currentUser} />}
       </main>
     </div>
   )
