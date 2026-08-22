@@ -3,6 +3,7 @@ import { Router, type IRouter } from "express";
 import { z } from "zod";
 import { prisma } from "@workspace/db";
 import { hashPassword } from "../lib/auth";
+import { loginIdFor } from "../lib/loginId";
 import { requireAuth, requireRole } from "../middlewares/auth";
 import { publicUser } from "./auth";
 
@@ -20,24 +21,6 @@ const createEmployeeSchema = z.object({
 
 function initialPassword(): string {
   return `Df!${randomBytes(9).toString("base64url")}`;
-}
-
-function companyPrefix(): string {
-  const letters = (process.env.COMPANY_NAME ?? "Workly")
-    .replace(/[^a-z]/gi, "")
-    .toUpperCase();
-  if (letters.length < 2) throw new Error("COMPANY_NAME must contain at least two letters.");
-  return letters.slice(0, 2);
-}
-
-function namePart(value: string): string {
-  const letters = value.replace(/[^a-z]/gi, "").toUpperCase();
-  if (letters.length < 2) throw new Error("Names must contain at least two letters.");
-  return letters.slice(0, 2);
-}
-
-function loginIdFor(firstName: string, lastName: string, year: number, serial: number): string {
-  return `${companyPrefix()}${namePart(firstName)}${namePart(lastName)}${year}${String(serial).padStart(5, "0")}`;
 }
 
 async function createEmployeeWithSerial(

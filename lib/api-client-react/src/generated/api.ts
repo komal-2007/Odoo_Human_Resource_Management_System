@@ -23,7 +23,10 @@ import type {
   AuthResponse,
   ChangePasswordRequest,
   CreateEmployeeRequest,
+  CreateLeaveRequest,
   HealthStatus,
+  LeaveDecisionRequest,
+  LeaveRequest,
   LoginRequest,
   UserResponse
 } from './api.schemas';
@@ -474,5 +477,306 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getCreateEmployeeMutationOptions(options));
+    }
+
+export const getCreateLeaveRequestUrl = () => {
+
+
+
+
+  return `/api/leave-requests`
+}
+
+/**
+ * Employee-authenticated. Creates a pending leave request for the current user's employee profile.
+ * @summary Submit a leave request
+ */
+export const createLeaveRequest = async (createLeaveRequest: CreateLeaveRequest, options?: Parameters<typeof customFetch>[1]): Promise<LeaveRequest> => {
+
+  return customFetch<LeaveRequest>(getCreateLeaveRequestUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createLeaveRequest)
+  }
+);}
+
+
+
+
+
+export const getCreateLeaveRequestMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createLeaveRequest>>, TError,{data: BodyType<CreateLeaveRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createLeaveRequest>>, TError,{data: BodyType<CreateLeaveRequest>}, TContext> => {
+
+const mutationKey = ['createLeaveRequest'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createLeaveRequest>>, {data: BodyType<CreateLeaveRequest>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createLeaveRequest(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateLeaveRequestMutationResult = NonNullable<Awaited<ReturnType<typeof createLeaveRequest>>>
+    export type CreateLeaveRequestMutationBody = BodyType<CreateLeaveRequest>
+    export type CreateLeaveRequestMutationError = ErrorType<void>
+
+    /**
+ * @summary Submit a leave request
+ */
+export const useCreateLeaveRequest = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createLeaveRequest>>, TError,{data: BodyType<CreateLeaveRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createLeaveRequest>>,
+        TError,
+        {data: BodyType<CreateLeaveRequest>},
+        TContext
+      > => {
+      return useMutation(getCreateLeaveRequestMutationOptions(options));
+    }
+
+export const getListLeaveRequestsUrl = () => {
+
+
+
+
+  return `/api/leave-requests`
+}
+
+/**
+ * Admin/HR-authenticated. Each item includes the related employee summary.
+ * @summary List all leave requests
+ */
+export const listLeaveRequests = async ( options?: Parameters<typeof customFetch>[1]): Promise<LeaveRequest[]> => {
+
+  return customFetch<LeaveRequest[]>(getListLeaveRequestsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListLeaveRequestsQueryKey = () => {
+    return [
+    `/api/leave-requests`
+    ] as const;
+    }
+
+
+export const getListLeaveRequestsQueryOptions = <TData = Awaited<ReturnType<typeof listLeaveRequests>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listLeaveRequests>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListLeaveRequestsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listLeaveRequests>>> = ({ signal }) => listLeaveRequests({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listLeaveRequests>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListLeaveRequestsQueryResult = NonNullable<Awaited<ReturnType<typeof listLeaveRequests>>>
+export type ListLeaveRequestsQueryError = ErrorType<void>
+
+
+/**
+ * @summary List all leave requests
+ */
+
+export function useListLeaveRequests<TData = Awaited<ReturnType<typeof listLeaveRequests>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listLeaveRequests>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListLeaveRequestsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListMyLeaveRequestsUrl = () => {
+
+
+
+
+  return `/api/leave-requests/me`
+}
+
+/**
+ * Employee-authenticated. Returns leave requests for the current user's employee profile.
+ * @summary List the current employee's leave requests
+ */
+export const listMyLeaveRequests = async ( options?: Parameters<typeof customFetch>[1]): Promise<LeaveRequest[]> => {
+
+  return customFetch<LeaveRequest[]>(getListMyLeaveRequestsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListMyLeaveRequestsQueryKey = () => {
+    return [
+    `/api/leave-requests/me`
+    ] as const;
+    }
+
+
+export const getListMyLeaveRequestsQueryOptions = <TData = Awaited<ReturnType<typeof listMyLeaveRequests>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMyLeaveRequests>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListMyLeaveRequestsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listMyLeaveRequests>>> = ({ signal }) => listMyLeaveRequests({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listMyLeaveRequests>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListMyLeaveRequestsQueryResult = NonNullable<Awaited<ReturnType<typeof listMyLeaveRequests>>>
+export type ListMyLeaveRequestsQueryError = ErrorType<void>
+
+
+/**
+ * @summary List the current employee's leave requests
+ */
+
+export function useListMyLeaveRequests<TData = Awaited<ReturnType<typeof listMyLeaveRequests>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMyLeaveRequests>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListMyLeaveRequestsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getDecideLeaveRequestStatusUrl = (id: string,) => {
+
+
+
+
+  return `/api/leave-requests/${id}/status`
+}
+
+/**
+ * Admin/HR-authenticated. Only pending leave requests can be decided.
+ * @summary Approve or reject a pending leave request
+ */
+export const decideLeaveRequestStatus = async (id: string,
+    leaveDecisionRequest: LeaveDecisionRequest, options?: Parameters<typeof customFetch>[1]): Promise<LeaveRequest> => {
+
+  return customFetch<LeaveRequest>(getDecideLeaveRequestStatusUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(leaveDecisionRequest)
+  }
+);}
+
+
+
+
+
+export const getDecideLeaveRequestStatusMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof decideLeaveRequestStatus>>, TError,{id: string;data: BodyType<LeaveDecisionRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof decideLeaveRequestStatus>>, TError,{id: string;data: BodyType<LeaveDecisionRequest>}, TContext> => {
+
+const mutationKey = ['decideLeaveRequestStatus'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof decideLeaveRequestStatus>>, {id: string;data: BodyType<LeaveDecisionRequest>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  decideLeaveRequestStatus(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DecideLeaveRequestStatusMutationResult = NonNullable<Awaited<ReturnType<typeof decideLeaveRequestStatus>>>
+    export type DecideLeaveRequestStatusMutationBody = BodyType<LeaveDecisionRequest>
+    export type DecideLeaveRequestStatusMutationError = ErrorType<void>
+
+    /**
+ * @summary Approve or reject a pending leave request
+ */
+export const useDecideLeaveRequestStatus = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof decideLeaveRequestStatus>>, TError,{id: string;data: BodyType<LeaveDecisionRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof decideLeaveRequestStatus>>,
+        TError,
+        {id: string;data: BodyType<LeaveDecisionRequest>},
+        TContext
+      > => {
+      return useMutation(getDecideLeaveRequestStatusMutationOptions(options));
     }
 

@@ -81,3 +81,69 @@ export interface AuthResponse {
   user: UserResponse;
 }
 
+export type LeaveType = typeof LeaveType[keyof typeof LeaveType];
+
+
+export const LeaveType = {
+  ANNUAL: 'ANNUAL',
+  SICK: 'SICK',
+  CASUAL: 'CASUAL',
+  UNPAID: 'UNPAID',
+  OTHER: 'OTHER',
+} as const;
+
+export type LeaveStatus = typeof LeaveStatus[keyof typeof LeaveStatus];
+
+
+export const LeaveStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+} as const;
+
+export interface CreateLeaveRequest {
+  leaveType: LeaveType;
+  startDate: string;
+  endDate: string;
+  /**
+     * @minLength 1
+     * @maxLength 1000
+     */
+  reason: string;
+}
+
+export type LeaveDecisionRequestStatus = typeof LeaveDecisionRequestStatus[keyof typeof LeaveDecisionRequestStatus];
+
+
+export const LeaveDecisionRequestStatus = {
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+} as const;
+
+export interface LeaveDecisionRequest {
+  status: LeaveDecisionRequestStatus;
+}
+
+export interface LeaveEmployeeSummary {
+  id: string;
+  employeeCode: string;
+  firstName: string;
+  lastName: string;
+  user: UserResponse;
+}
+
+export interface LeaveRequest {
+  id: string;
+  employeeId: string;
+  leaveType: LeaveType;
+  startDate: string;
+  endDate: string;
+  reason: string;
+  status: LeaveStatus;
+  reviewedAt?: string | null;
+  reviewedById?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  employee?: LeaveEmployeeSummary;
+}
+

@@ -20,7 +20,9 @@ const decisionSchema = z.object({
 function parseDateOnly(value: string): Date {
   const date = new Date(`${value}T00:00:00.000Z`);
   if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value) {
-    throw new Error("Dates must be valid calendar dates.");
+    const error = new Error("Dates must be valid calendar dates.");
+(error as Error & { status?: number }).status = 400;
+throw error;
   }
   return date;
 }
@@ -28,7 +30,11 @@ function parseDateOnly(value: string): Date {
 function validateDateRange(startDate: string, endDate: string) {
   const start = parseDateOnly(startDate);
   const end = parseDateOnly(endDate);
-  if (start > end) throw new Error("startDate cannot be after endDate.");
+  if (start > end) {
+    const error = new Error("startDate cannot be after endDate.");
+    (error as Error & { status?: number }).status = 400;
+    throw error;
+  }
   return { start, end };
 }
 

@@ -15,8 +15,8 @@ Authentication is Admin-created only: employees do not self-register, and JWT pa
 
 **How to apply:** Use `requireAuth` for protected routes and `requireRole("ADMIN")` for HR management routes; never include password hashes in responses.
 
-Employee Login IDs use the Workly-derived `WO` prefix, two uppercase letters from each name, the UTC joining year, and a five-digit serial that restarts per year; joining date/year/serial are persisted.
+Employee Login IDs use company initials from each word of `COMPANY_NAME`, two uppercase letters from each of the first and last names, the UTC joining year, and a four-digit serial that restarts per year; joining date/year/serial are persisted.
 
-**Why:** HRMS requires IDs such as `WOODDO202300001` to be deterministic and sequential rather than random.
+**Why:** HRMS requires IDs such as `OIJODO20220001` (Odoo India, John Doe, 2022, first that year) to be deterministic and sequential rather than random.
 
-**How to apply:** Require `dateOfJoining` on employee creation and allocate the next serial inside the Prisma transaction; preserve the explicit `COMPANY_NAME` environment setting.
+**How to apply:** Require `dateOfJoining` on employee creation and allocate the next serial inside the Prisma transaction; preserve the explicit `COMPANY_NAME` environment setting. Do not rewrite Login IDs of existing users.

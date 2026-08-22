@@ -96,3 +96,152 @@ export const CreateEmployeeBody = zod.object({
 export const CreateEmployeeResponse = zod.void()
 
 
+/**
+ * Employee-authenticated. Creates a pending leave request for the current user's employee profile.
+ * @summary Submit a leave request
+ */
+export const createLeaveRequestBodyReasonMax = 1000;
+
+
+
+export const CreateLeaveRequestBody = zod.object({
+  "leaveType": zod.enum(['ANNUAL', 'SICK', 'CASUAL', 'UNPAID', 'OTHER']),
+  "startDate": zod.coerce.date(),
+  "endDate": zod.coerce.date(),
+  "reason": zod.string().min(1).max(createLeaveRequestBodyReasonMax)
+})
+
+export const CreateLeaveRequestResponse = zod.object({
+  "id": zod.string(),
+  "employeeId": zod.string(),
+  "leaveType": zod.enum(['ANNUAL', 'SICK', 'CASUAL', 'UNPAID', 'OTHER']),
+  "startDate": zod.coerce.date(),
+  "endDate": zod.coerce.date(),
+  "reason": zod.string(),
+  "status": zod.enum(['PENDING', 'APPROVED', 'REJECTED']),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "reviewedById": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "employee": zod.object({
+  "id": zod.string(),
+  "employeeCode": zod.string(),
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "user": zod.object({
+  "id": zod.string(),
+  "loginId": zod.string(),
+  "email": zod.string().describe('Valid email address'),
+  "role": zod.enum(['ADMIN', 'EMPLOYEE']),
+  "mustChangePassword": zod.boolean().optional()
+})
+}).optional()
+})
+
+
+/**
+ * Admin/HR-authenticated. Each item includes the related employee summary.
+ * @summary List all leave requests
+ */
+export const ListLeaveRequestsResponseItem = zod.object({
+  "id": zod.string(),
+  "employeeId": zod.string(),
+  "leaveType": zod.enum(['ANNUAL', 'SICK', 'CASUAL', 'UNPAID', 'OTHER']),
+  "startDate": zod.coerce.date(),
+  "endDate": zod.coerce.date(),
+  "reason": zod.string(),
+  "status": zod.enum(['PENDING', 'APPROVED', 'REJECTED']),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "reviewedById": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "employee": zod.object({
+  "id": zod.string(),
+  "employeeCode": zod.string(),
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "user": zod.object({
+  "id": zod.string(),
+  "loginId": zod.string(),
+  "email": zod.string().describe('Valid email address'),
+  "role": zod.enum(['ADMIN', 'EMPLOYEE']),
+  "mustChangePassword": zod.boolean().optional()
+})
+}).optional()
+})
+export const ListLeaveRequestsResponse = zod.array(ListLeaveRequestsResponseItem)
+
+
+/**
+ * Employee-authenticated. Returns leave requests for the current user's employee profile.
+ * @summary List the current employee's leave requests
+ */
+export const ListMyLeaveRequestsResponseItem = zod.object({
+  "id": zod.string(),
+  "employeeId": zod.string(),
+  "leaveType": zod.enum(['ANNUAL', 'SICK', 'CASUAL', 'UNPAID', 'OTHER']),
+  "startDate": zod.coerce.date(),
+  "endDate": zod.coerce.date(),
+  "reason": zod.string(),
+  "status": zod.enum(['PENDING', 'APPROVED', 'REJECTED']),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "reviewedById": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "employee": zod.object({
+  "id": zod.string(),
+  "employeeCode": zod.string(),
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "user": zod.object({
+  "id": zod.string(),
+  "loginId": zod.string(),
+  "email": zod.string().describe('Valid email address'),
+  "role": zod.enum(['ADMIN', 'EMPLOYEE']),
+  "mustChangePassword": zod.boolean().optional()
+})
+}).optional()
+})
+export const ListMyLeaveRequestsResponse = zod.array(ListMyLeaveRequestsResponseItem)
+
+
+/**
+ * Admin/HR-authenticated. Only pending leave requests can be decided.
+ * @summary Approve or reject a pending leave request
+ */
+export const DecideLeaveRequestStatusParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const DecideLeaveRequestStatusBody = zod.object({
+  "status": zod.enum(['APPROVED', 'REJECTED'])
+})
+
+export const DecideLeaveRequestStatusResponse = zod.object({
+  "id": zod.string(),
+  "employeeId": zod.string(),
+  "leaveType": zod.enum(['ANNUAL', 'SICK', 'CASUAL', 'UNPAID', 'OTHER']),
+  "startDate": zod.coerce.date(),
+  "endDate": zod.coerce.date(),
+  "reason": zod.string(),
+  "status": zod.enum(['PENDING', 'APPROVED', 'REJECTED']),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "reviewedById": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "employee": zod.object({
+  "id": zod.string(),
+  "employeeCode": zod.string(),
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "user": zod.object({
+  "id": zod.string(),
+  "loginId": zod.string(),
+  "email": zod.string().describe('Valid email address'),
+  "role": zod.enum(['ADMIN', 'EMPLOYEE']),
+  "mustChangePassword": zod.boolean().optional()
+})
+}).optional()
+})
+
+

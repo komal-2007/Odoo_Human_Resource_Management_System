@@ -109,6 +109,111 @@ paths:
           description: Invalid employee details
         "403":
           description: Admin/HR access required
+  /leave-requests:
+    post:
+      operationId: createLeaveRequest
+      tags: [leave]
+      summary: Submit a leave request
+      description: Employee-authenticated. Creates a pending leave request for the current user's employee profile.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLeaveRequest"
+      responses:
+        "201":
+          description: Leave request created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeaveRequest"
+        "400":
+          description: Invalid leave request details
+        "401":
+          description: Authentication required
+        "403":
+          description: Employee access required
+        "404":
+          description: Employee profile not found
+    get:
+      operationId: listLeaveRequests
+      tags: [leave]
+      summary: List all leave requests
+      description: Admin/HR-authenticated. Each item includes the related employee summary.
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: All leave requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LeaveRequest"
+        "401":
+          description: Authentication required
+        "403":
+          description: Admin/HR access required
+  /leave-requests/me:
+    get:
+      operationId: listMyLeaveRequests
+      tags: [leave]
+      summary: List the current employee's leave requests
+      description: Employee-authenticated. Returns leave requests for the current user's employee profile.
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: Current employee's leave requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LeaveRequest"
+        "401":
+          description: Authentication required
+        "403":
+          description: Employee access required
+        "404":
+          description: Employee profile not found
+  /leave-requests/{id}/status:
+    patch:
+      operationId: decideLeaveRequestStatus
+      tags: [leave]
+      summary: Approve or reject a pending leave request
+      description: Admin/HR-authenticated. Only pending leave requests can be decided.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LeaveDecisionRequest"
+      responses:
+        "200":
+          description: Leave request updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeaveRequest"
+        "400":
+          description: Invalid decision
+        "401":
+          description: Authentication required
+        "403":
+          description: Admin/HR access required
+        "404":
+          description: Leave request not found
+        "409":
+          description: Leave request is not pending
 components:
   securitySchemes:
     bearerAuth:
@@ -166,4 +271,59 @@ components:
       properties:
         token: { type: string }
         user: { $ref: "#/components/schemas/UserResponse" }
+    LeaveType:
+      type: string
+      enum: [ANNUAL, SICK, CASUAL, UNPAID, OTHER]
+    LeaveStatus:
+      type: string
+      enum: [PENDING, APPROVED, REJECTED]
+    CreateLeaveRequest:
+      type: object
+      required: [leaveType, startDate, endDate, reason]
+      properties:
+        leaveType: { $ref: "#/components/schemas/LeaveType" }
+        startDate: { type: string, format: date }
+        endDate: { type: string, format: date }
+        reason: { type: string, minLength: 1, maxLength: 1000 }
+    LeaveDecisionRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [APPROVED, REJECTED]
+    LeaveEmployeeSummary:
+      type: object
+      required: [id, employeeCode, firstName, lastName, user]
+      properties:
+        id: { type: string }
+        employeeCode: { type: string }
+        firstName: { type: string }
+        lastName: { type: string }
+        user: { $ref: "#/components/schemas/UserResponse" }
+    LeaveRequest:
+      type: object
+      required:
+        - id
+        - employeeId
+        - leaveType
+        - startDate
+        - endDate
+        - reason
+        - status
+        - createdAt
+        - updatedAt
+      properties:
+        id: { type: string }
+        employeeId: { type: string }
+        leaveType: { $ref: "#/components/schemas/LeaveType" }
+        startDate: { type: string, format: date }
+        endDate: { type: string, format: date }
+        reason: { type: string }
+        status: { $ref: "#/components/schemas/LeaveStatus" }
+        reviewedAt: { type: string, format: date-time, nullable: true }
+        reviewedById: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        employee: { $ref: "#/components/schemas/LeaveEmployeeSummary" }
 
