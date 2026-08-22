@@ -173,8 +173,8 @@ export const ListLeaveRequestsResponse = zod.array(ListLeaveRequestsResponseItem
 
 
 /**
- * Employee-authenticated. Returns leave requests for the current user's employee profile.
- * @summary List the current employee's leave requests
+ * Employee-authenticated. Returns only the current employee's leave requests.
+ * @summary List my leave requests
  */
 export const ListMyLeaveRequestsResponseItem = zod.object({
   "id": zod.string(),
@@ -243,5 +243,97 @@ export const DecideLeaveRequestStatusResponse = zod.object({
 })
 }).optional()
 })
+
+
+/**
+ * Employee-authenticated. Creates or updates the current employee's attendance record for today.
+ * @summary Check in for today
+ */
+export const CheckInResponse = zod.object({
+  "id": zod.string(),
+  "employeeId": zod.string(),
+  "workDate": zod.coerce.date(),
+  "checkIn": zod.coerce.date().nullish(),
+  "checkOut": zod.coerce.date().nullish(),
+  "status": zod.enum(['PRESENT', 'ABSENT', 'HALF_DAY', 'ON_LEAVE']),
+  "workedMinutes": zod.number().nullish(),
+  "workedHours": zod.number().nullish(),
+  "extraMinutes": zod.number().nullish(),
+  "extraHours": zod.number().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * Employee-authenticated. Records the current employee's checkout time.
+ * @summary Check out for today
+ */
+export const CheckOutResponse = zod.object({
+  "id": zod.string(),
+  "employeeId": zod.string(),
+  "workDate": zod.coerce.date(),
+  "checkIn": zod.coerce.date().nullish(),
+  "checkOut": zod.coerce.date().nullish(),
+  "status": zod.enum(['PRESENT', 'ABSENT', 'HALF_DAY', 'ON_LEAVE']),
+  "workedMinutes": zod.number().nullish(),
+  "workedHours": zod.number().nullish(),
+  "extraMinutes": zod.number().nullish(),
+  "extraHours": zod.number().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * Employee-authenticated. Returns attendance records belonging only to the current employee.
+ * @summary Get my attendance
+ */
+export const GetMyAttendanceQueryParams = zod.object({
+  "from": zod.date().optional(),
+  "to": zod.date().optional()
+})
+
+export const GetMyAttendanceResponseItem = zod.object({
+  "id": zod.string(),
+  "employeeId": zod.string(),
+  "workDate": zod.coerce.date(),
+  "checkIn": zod.coerce.date().nullish(),
+  "checkOut": zod.coerce.date().nullish(),
+  "status": zod.enum(['PRESENT', 'ABSENT', 'HALF_DAY', 'ON_LEAVE']),
+  "workedMinutes": zod.number().nullish(),
+  "workedHours": zod.number().nullish(),
+  "extraMinutes": zod.number().nullish(),
+  "extraHours": zod.number().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+export const GetMyAttendanceResponse = zod.array(GetMyAttendanceResponseItem)
+
+
+/**
+ * Admin/HR-authenticated. Returns attendance records for employees.
+ * @summary List employee attendance
+ */
+export const ListAttendanceQueryParams = zod.object({
+  "employeeId": zod.coerce.string().optional(),
+  "date": zod.date().optional()
+})
+
+export const ListAttendanceResponseItem = zod.object({
+  "id": zod.string(),
+  "employeeId": zod.string(),
+  "workDate": zod.coerce.date(),
+  "checkIn": zod.coerce.date().nullish(),
+  "checkOut": zod.coerce.date().nullish(),
+  "status": zod.enum(['PRESENT', 'ABSENT', 'HALF_DAY', 'ON_LEAVE']),
+  "workedMinutes": zod.number().nullish(),
+  "workedHours": zod.number().nullish(),
+  "extraMinutes": zod.number().nullish(),
+  "extraHours": zod.number().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+export const ListAttendanceResponse = zod.array(ListAttendanceResponseItem)
 
 

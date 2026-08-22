@@ -147,3 +147,38 @@ export interface LeaveRequest {
   employee?: LeaveEmployeeSummary;
 }
 
+export type AttendanceStatus = typeof AttendanceStatus[keyof typeof AttendanceStatus];
+
+
+export const AttendanceStatus = {
+  PRESENT: 'PRESENT',
+  ABSENT: 'ABSENT',
+  HALF_DAY: 'HALF_DAY',
+  ON_LEAVE: 'ON_LEAVE',
+} as const;
+
+export interface AttendanceRecord {
+  id: string;
+  employeeId: string;
+  workDate: string;
+  checkIn?: string | null;
+  checkOut?: string | null;
+  status: AttendanceStatus;
+  workedMinutes?: number | null;
+  workedHours?: number | null;
+  extraMinutes?: number | null;
+  extraHours?: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type GetMyAttendanceParams = {
+from?: string;
+to?: string;
+};
+
+export type ListAttendanceParams = {
+employeeId?: string;
+date?: string;
+};
+

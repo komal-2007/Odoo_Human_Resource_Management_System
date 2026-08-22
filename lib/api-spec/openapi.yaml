@@ -4,9 +4,11 @@ info:
   title: Api
   version: 0.1.0
   description: API specification
+
 servers:
   - url: /api
     description: Base API path
+
 tags:
   - name: health
     description: Health operations
@@ -16,6 +18,9 @@ tags:
     description: Admin/HR employee management
   - name: leave
     description: Employee leave requests and Admin/HR decisions
+  - name: attendance
+    description: Employee attendance and check-in/check-out operations
+
 paths:
   /healthz:
     get:
@@ -36,6 +41,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
   /auth/login:
     post:
       operationId: login
@@ -56,6 +62,7 @@ paths:
                 $ref: "#/components/schemas/AuthResponse"
         "401":
           description: Invalid credentials
+
   /auth/me:
     get:
       operationId: getCurrentUser
@@ -68,6 +75,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserResponse"
+        "401":
+          description: Authentication required
+
   /auth/change-password:
     post:
       operationId: changePassword
@@ -84,6 +94,9 @@ paths:
           description: Password changed
         "400":
           description: Invalid password
+        "401":
+          description: Authentication required
+
   /employees:
     get:
       operationId: listEmployees
@@ -92,6 +105,11 @@ paths:
       responses:
         "200":
           description: Employee accounts
+        "401":
+          description: Authentication required
+        "403":
+          description: Admin/HR access required
+
     post:
       operationId: createEmployee
       tags: [employees]
@@ -107,8 +125,11 @@ paths:
           description: Employee account created
         "400":
           description: Invalid employee details
+        "401":
+          description: Authentication required
         "403":
           description: Admin/HR access required
+
   /leave-requests:
     post:
       operationId: createLeaveRequest
@@ -137,6 +158,7 @@ paths:
           description: Employee access required
         "404":
           description: Employee profile not found
+
     get:
       operationId: listLeaveRequests
       tags: [leave]
@@ -156,16 +178,17 @@ paths:
           description: Authentication required
         "403":
           description: Admin/HR access required
+
   /leave-requests/me:
     get:
       operationId: listMyLeaveRequests
       tags: [leave]
-      summary: List the current employee's leave requests
-      description: Employee-authenticated. Returns leave requests for the current user's employee profile.
+      summary: List my leave requests
+      description: Employee-authenticated. Returns only the current employee's leave requests.
       security: [{ bearerAuth: [] }]
       responses:
         "200":
-          description: Current employee's leave requests
+          description: Current employee leave requests
           content:
             application/json:
               schema:
@@ -178,6 +201,7 @@ paths:
           description: Employee access required
         "404":
           description: Employee profile not found
+
   /leave-requests/{id}/status:
     patch:
       operationId: decideLeaveRequestStatus
@@ -214,12 +238,133 @@ paths:
           description: Leave request not found
         "409":
           description: Leave request is not pending
+
+  /attendance/check-in:
+    post:
+      operationId: checkIn
+      tags: [attendance]
+      summary: Check in for today
+      description: Employee-authenticated. Creates or updates the current employee's attendance record for today.
+      security: [{ bearerAuth: [] }]
+      responses:
+        "201":
+          description: Attendance check-in recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttendanceRecord"
+        "401":
+          description: Authentication required
+        "403":
+          description: Employee access required
+        "404":
+          description: Employee profile not found
+        "409":
+          description: Employee has already checked in
+
+  /attendance/check-out:
+    post:
+      operationId: checkOut
+      tags: [attendance]
+      summary: Check out for today
+      description: Employee-authenticated. Records the current employee's checkout time.
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: Attendance check-out recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttendanceRecord"
+        "401":
+          description: Authentication required
+        "403":
+          description: Employee access required
+        "404":
+          description: Employee profile not found
+        "409":
+          description: Check-in is required or employee has already checked out
+
+  /attendance/me:
+    get:
+      operationId: getMyAttendance
+      tags: [attendance]
+      summary: Get my attendance
+      description: Employee-authenticated. Returns attendance records belonging only to the current employee.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Current employee attendance records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AttendanceRecord"
+        "400":
+          description: Invalid date filters
+        "401":
+          description: Authentication required
+        "403":
+          description: Employee access required
+        "404":
+          description: Employee profile not found
+
+  /attendance:
+    get:
+      operationId: listAttendance
+      tags: [attendance]
+      summary: List employee attendance
+      description: Admin/HR-authenticated. Returns attendance records for employees.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: employeeId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Attendance records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AttendanceRecord"
+        "400":
+          description: Invalid date
+        "401":
+          description: Authentication required
+        "403":
+          description: Admin/HR access required
+
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
   schemas:
     HealthStatus:
       type: object
@@ -232,18 +377,21 @@ components:
       required:
         - status
         - database
+
     LoginRequest:
       type: object
       required: [loginId, password]
       properties:
         loginId: { type: string, minLength: 1 }
         password: { type: string, minLength: 8 }
+
     ChangePasswordRequest:
       type: object
       required: [currentPassword, newPassword]
       properties:
         currentPassword: { type: string, minLength: 1 }
         newPassword: { type: string, minLength: 8 }
+
     CreateEmployeeRequest:
       type: object
       required: [email, firstName, lastName, employeeCode, dateOfJoining]
@@ -256,6 +404,7 @@ components:
         department: { type: string, maxLength: 100 }
         jobTitle: { type: string, maxLength: 100 }
         dateOfJoining: { type: string, format: date }
+
     UserResponse:
       type: object
       required: [id, loginId, email, role]
@@ -265,18 +414,22 @@ components:
         email: { type: string, description: Valid email address }
         role: { type: string, enum: [ADMIN, EMPLOYEE] }
         mustChangePassword: { type: boolean }
+
     AuthResponse:
       type: object
       required: [token, user]
       properties:
         token: { type: string }
         user: { $ref: "#/components/schemas/UserResponse" }
+
     LeaveType:
       type: string
       enum: [ANNUAL, SICK, CASUAL, UNPAID, OTHER]
+
     LeaveStatus:
       type: string
       enum: [PENDING, APPROVED, REJECTED]
+
     CreateLeaveRequest:
       type: object
       required: [leaveType, startDate, endDate, reason]
@@ -285,6 +438,7 @@ components:
         startDate: { type: string, format: date }
         endDate: { type: string, format: date }
         reason: { type: string, minLength: 1, maxLength: 1000 }
+
     LeaveDecisionRequest:
       type: object
       required: [status]
@@ -292,6 +446,7 @@ components:
         status:
           type: string
           enum: [APPROVED, REJECTED]
+
     LeaveEmployeeSummary:
       type: object
       required: [id, employeeCode, firstName, lastName, user]
@@ -301,6 +456,7 @@ components:
         firstName: { type: string }
         lastName: { type: string }
         user: { $ref: "#/components/schemas/UserResponse" }
+
     LeaveRequest:
       type: object
       required:
@@ -325,5 +481,33 @@ components:
         reviewedById: { type: string, nullable: true }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
-        employee: { $ref: "#/components/schemas/LeaveEmployeeSummary" }
+        employee:
+          $ref: "#/components/schemas/LeaveEmployeeSummary"
 
+    AttendanceStatus:
+      type: string
+      enum: [PRESENT, ABSENT, HALF_DAY, ON_LEAVE]
+
+    AttendanceRecord:
+      type: object
+      required:
+        - id
+        - employeeId
+        - workDate
+        - status
+        - createdAt
+        - updatedAt
+      properties:
+        id: { type: string }
+        employeeId: { type: string }
+        workDate: { type: string, format: date }
+        checkIn: { type: string, format: date-time, nullable: true }
+        checkOut: { type: string, format: date-time, nullable: true }
+        status:
+          $ref: "#/components/schemas/AttendanceStatus"
+        workedMinutes: { type: number, nullable: true }
+        workedHours: { type: number, nullable: true }
+        extraMinutes: { type: number, nullable: true }
+        extraHours: { type: number, nullable: true }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }

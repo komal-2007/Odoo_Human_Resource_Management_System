@@ -20,13 +20,16 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AttendanceRecord,
   AuthResponse,
   ChangePasswordRequest,
   CreateEmployeeRequest,
   CreateLeaveRequest,
+  GetMyAttendanceParams,
   HealthStatus,
   LeaveDecisionRequest,
   LeaveRequest,
+  ListAttendanceParams,
   LoginRequest,
   UserResponse
 } from './api.schemas';
@@ -237,7 +240,7 @@ export const getGetCurrentUserQueryKey = () => {
     }
 
 
-export const getGetCurrentUserQueryOptions = <TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+export const getGetCurrentUserQueryOptions = <TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -256,11 +259,11 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetCurrentUserQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>
-export type GetCurrentUserQueryError = ErrorType<unknown>
+export type GetCurrentUserQueryError = ErrorType<void>
 
 
 
-export function useGetCurrentUser<TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = ErrorType<unknown>>(
+export function useGetCurrentUser<TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = ErrorType<void>>(
   options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
@@ -373,7 +376,7 @@ export const getListEmployeesQueryKey = () => {
     }
 
 
-export const getListEmployeesQueryOptions = <TData = Awaited<ReturnType<typeof listEmployees>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listEmployees>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+export const getListEmployeesQueryOptions = <TData = Awaited<ReturnType<typeof listEmployees>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listEmployees>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -392,11 +395,11 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type ListEmployeesQueryResult = NonNullable<Awaited<ReturnType<typeof listEmployees>>>
-export type ListEmployeesQueryError = ErrorType<unknown>
+export type ListEmployeesQueryError = ErrorType<void>
 
 
 
-export function useListEmployees<TData = Awaited<ReturnType<typeof listEmployees>>, TError = ErrorType<unknown>>(
+export function useListEmployees<TData = Awaited<ReturnType<typeof listEmployees>>, TError = ErrorType<void>>(
   options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listEmployees>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
@@ -638,8 +641,8 @@ export const getListMyLeaveRequestsUrl = () => {
 }
 
 /**
- * Employee-authenticated. Returns leave requests for the current user's employee profile.
- * @summary List the current employee's leave requests
+ * Employee-authenticated. Returns only the current employee's leave requests.
+ * @summary List my leave requests
  */
 export const listMyLeaveRequests = async ( options?: Parameters<typeof customFetch>[1]): Promise<LeaveRequest[]> => {
 
@@ -686,7 +689,7 @@ export type ListMyLeaveRequestsQueryError = ErrorType<void>
 
 
 /**
- * @summary List the current employee's leave requests
+ * @summary List my leave requests
  */
 
 export function useListMyLeaveRequests<TData = Awaited<ReturnType<typeof listMyLeaveRequests>>, TError = ErrorType<void>>(
@@ -780,3 +783,310 @@ export const useDecideLeaveRequestStatus = <TError = ErrorType<void>,
       return useMutation(getDecideLeaveRequestStatusMutationOptions(options));
     }
 
+export const getCheckInUrl = () => {
+
+
+
+
+  return `/api/attendance/check-in`
+}
+
+/**
+ * Employee-authenticated. Creates or updates the current employee's attendance record for today.
+ * @summary Check in for today
+ */
+export const checkIn = async ( options?: Parameters<typeof customFetch>[1]): Promise<AttendanceRecord> => {
+
+  return customFetch<AttendanceRecord>(getCheckInUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getCheckInMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof checkIn>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof checkIn>>, TError,void, TContext> => {
+
+const mutationKey = ['checkIn'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof checkIn>>, void> = () => {
+
+
+          return  checkIn(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CheckInMutationResult = NonNullable<Awaited<ReturnType<typeof checkIn>>>
+
+    export type CheckInMutationError = ErrorType<void>
+
+    /**
+ * @summary Check in for today
+ */
+export const useCheckIn = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof checkIn>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof checkIn>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getCheckInMutationOptions(options));
+    }
+
+export const getCheckOutUrl = () => {
+
+
+
+
+  return `/api/attendance/check-out`
+}
+
+/**
+ * Employee-authenticated. Records the current employee's checkout time.
+ * @summary Check out for today
+ */
+export const checkOut = async ( options?: Parameters<typeof customFetch>[1]): Promise<AttendanceRecord> => {
+
+  return customFetch<AttendanceRecord>(getCheckOutUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getCheckOutMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof checkOut>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof checkOut>>, TError,void, TContext> => {
+
+const mutationKey = ['checkOut'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof checkOut>>, void> = () => {
+
+
+          return  checkOut(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CheckOutMutationResult = NonNullable<Awaited<ReturnType<typeof checkOut>>>
+
+    export type CheckOutMutationError = ErrorType<void>
+
+    /**
+ * @summary Check out for today
+ */
+export const useCheckOut = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof checkOut>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof checkOut>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getCheckOutMutationOptions(options));
+    }
+
+export const getGetMyAttendanceUrl = (params?: GetMyAttendanceParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/attendance/me?${stringifiedParams}` : `/api/attendance/me`
+}
+
+/**
+ * Employee-authenticated. Returns attendance records belonging only to the current employee.
+ * @summary Get my attendance
+ */
+export const getMyAttendance = async (params?: GetMyAttendanceParams, options?: Parameters<typeof customFetch>[1]): Promise<AttendanceRecord[]> => {
+
+  return customFetch<AttendanceRecord[]>(getGetMyAttendanceUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetMyAttendanceQueryKey = (params?: GetMyAttendanceParams,) => {
+    return [
+    `/api/attendance/me`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetMyAttendanceQueryOptions = <TData = Awaited<ReturnType<typeof getMyAttendance>>, TError = ErrorType<void>>(params?: GetMyAttendanceParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMyAttendance>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMyAttendanceQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMyAttendance>>> = ({ signal }) => getMyAttendance(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMyAttendance>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetMyAttendanceQueryResult = NonNullable<Awaited<ReturnType<typeof getMyAttendance>>>
+export type GetMyAttendanceQueryError = ErrorType<void>
+
+
+/**
+ * @summary Get my attendance
+ */
+
+export function useGetMyAttendance<TData = Awaited<ReturnType<typeof getMyAttendance>>, TError = ErrorType<void>>(
+ params?: GetMyAttendanceParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMyAttendance>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetMyAttendanceQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListAttendanceUrl = (params?: ListAttendanceParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/attendance?${stringifiedParams}` : `/api/attendance`
+}
+
+/**
+ * Admin/HR-authenticated. Returns attendance records for employees.
+ * @summary List employee attendance
+ */
+export const listAttendance = async (params?: ListAttendanceParams, options?: Parameters<typeof customFetch>[1]): Promise<AttendanceRecord[]> => {
+
+  return customFetch<AttendanceRecord[]>(getListAttendanceUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListAttendanceQueryKey = (params?: ListAttendanceParams,) => {
+    return [
+    `/api/attendance`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListAttendanceQueryOptions = <TData = Awaited<ReturnType<typeof listAttendance>>, TError = ErrorType<void>>(params?: ListAttendanceParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAttendance>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListAttendanceQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listAttendance>>> = ({ signal }) => listAttendance(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listAttendance>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListAttendanceQueryResult = NonNullable<Awaited<ReturnType<typeof listAttendance>>>
+export type ListAttendanceQueryError = ErrorType<void>
+
+
+/**
+ * @summary List employee attendance
+ */
+
+export function useListAttendance<TData = Awaited<ReturnType<typeof listAttendance>>, TError = ErrorType<void>>(
+ params?: ListAttendanceParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAttendance>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListAttendanceQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}

@@ -6,10 +6,13 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './attendanceRecord';
+export * from './attendanceStatus';
 export * from './authResponse';
 export * from './changePasswordRequest';
 export * from './createEmployeeRequest';
 export * from './createLeaveRequest';
+export * from './getMyAttendanceParams';
 export * from './healthStatus';
 export * from './healthStatusStatus';
 export * from './leaveDecisionRequest';
@@ -18,6 +21,7 @@ export * from './leaveEmployeeSummary';
 export * from './leaveRequest';
 export * from './leaveStatus';
 export * from './leaveType';
+export * from './listAttendanceParams';
 export * from './loginRequest';
 export * from './userResponse';
 export * from './userResponseRole';
