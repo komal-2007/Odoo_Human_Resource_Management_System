@@ -1,16 +1,12 @@
 {
-  "name": "dayflow-admin",
+  "name": "frontend",
   "private": true,
   "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:frontend": "vite",
-    "dev:server": "pnpm --filter @workspace/api-server dev",
     "build": "vite build",
-    "preview": "vite preview",
-    "db:push": "pnpm --filter @workspace/db run prisma db push",
-    "db:seed": "pnpm --filter @workspace/db run seed"
+    "preview": "vite preview"
   },
   "dependencies": {
     "react": "^18.3.1",
