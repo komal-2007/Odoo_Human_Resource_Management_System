@@ -21,7 +21,7 @@ export default function SignUp({ onSignUpSuccess, onNavigateToSignIn }) {
 
   // Live calculation of the generated Login ID per wireframe formula
   const generatedId = generateLoginId(
-    companyName || "Workly",
+    companyName || "DayFlow",
     name || "Admin User",
     new Date().getFullYear(),
     1
@@ -100,10 +100,10 @@ export default function SignUp({ onSignUpSuccess, onNavigateToSignIn }) {
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-base-sidebar border border-base-border mb-2">
             <div className="w-6 h-6 rounded-md bg-purple-600 flex items-center justify-center font-display font-bold text-xs text-white">
-              W
+              D
             </div>
             <span className="font-display font-bold text-base tracking-tight text-ink-primary">
-              Workly
+              DayFlow
             </span>
           </div>
           <h1 className="font-display font-bold text-2xl tracking-tight text-ink-primary">
@@ -117,7 +117,7 @@ export default function SignUp({ onSignUpSuccess, onNavigateToSignIn }) {
         {/* Error Alert */}
         {error && (
           <div className="p-3.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
-            <span>??</span>
+            <span>‚ö†Ô∏è</span>
             <span>{error}</span>
           </div>
         )}
@@ -134,7 +134,7 @@ export default function SignUp({ onSignUpSuccess, onNavigateToSignIn }) {
                 required
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
-                placeholder="e.g. Workly Technologies"
+                placeholder="e.g. DayFlow Technologies"
                 className="flex-1 bg-base-sidebar border border-base-border rounded-lg px-3.5 py-2 text-sm text-ink-primary placeholder:text-ink-secondary/60 focus:outline-none focus:border-purple-500 transition-colors"
               />
 
@@ -222,7 +222,7 @@ export default function SignUp({ onSignUpSuccess, onNavigateToSignIn }) {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="ïïïïïïïï"
+                  placeholder="ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ"
                   className="w-full bg-base-sidebar border border-base-border rounded-lg px-3.5 py-2 pr-10 text-sm text-ink-primary placeholder:text-ink-secondary/60 focus:outline-none focus:border-purple-500 transition-colors"
                 />
                 <button
@@ -246,7 +246,7 @@ export default function SignUp({ onSignUpSuccess, onNavigateToSignIn }) {
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="ïïïïïïïï"
+                  placeholder="ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ"
                   className="w-full bg-base-sidebar border border-base-border rounded-lg px-3.5 py-2 pr-10 text-sm text-ink-primary placeholder:text-ink-secondary/60 focus:outline-none focus:border-purple-500 transition-colors"
                 />
                 <button

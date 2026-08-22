@@ -23,8 +23,8 @@ export async function registerAdmin(userData) {
         throw new Error(error.message || "Registration failed")
       }
       const data = await response.json()
-      localStorage.setItem("workly_user", JSON.stringify(data.user))
-      localStorage.setItem("workly_token", data.token || "mock-token")
+      localStorage.setItem("dayflow_user", JSON.stringify(data.user))
+      localStorage.setItem("dayflow_token", data.token || "mock-token")
       return data.user
     } catch (err) {
       console.error("Backend signup error:", err)
@@ -47,7 +47,7 @@ export async function registerAdmin(userData) {
     location: "Headquarters",
   }
 
-  localStorage.setItem("workly_user", JSON.stringify(mockUser))
+  localStorage.setItem("dayflow_user", JSON.stringify(mockUser))
   return mockUser
 }
 
@@ -63,13 +63,13 @@ export async function loginUser(credentials) {
       throw new Error(error.message || "Invalid credentials")
     }
     const data = await response.json()
-    localStorage.setItem("workly_user", JSON.stringify(data.user))
-    localStorage.setItem("workly_token", data.token || "mock-token")
+    localStorage.setItem("dayflow_user", JSON.stringify(data.user))
+    localStorage.setItem("dayflow_token", data.token || "mock-token")
     return data.user
   }
 
   // Mock login fallback
-  const savedUser = JSON.parse(localStorage.getItem("workly_user") || "null")
+  const savedUser = JSON.parse(localStorage.getItem("dayflow_user") || "null")
   if (savedUser && (savedUser.email === credentials.loginId || savedUser.loginId === credentials.loginId)) {
     return savedUser
   }
@@ -77,25 +77,25 @@ export async function loginUser(credentials) {
   // Default admin user fallback
   const defaultAdmin = {
     id: 1,
-    loginId: "WOADUS20260001",
+    loginId: "DFADUS20260001",
     name: "Admin User",
-    email: credentials.loginId.includes("@") ? credentials.loginId : "admin@workly.com",
-    company: "Workly Technologies",
+    email: credentials.loginId.includes("@") ? credentials.loginId : "admin@dayflow.com",
+    company: "DayFlow Technologies",
     role: "admin",
     department: "Executive",
     manager: "Board",
     location: "Bengaluru, IN",
   }
-  localStorage.setItem("workly_user", JSON.stringify(defaultAdmin))
+  localStorage.setItem("dayflow_user", JSON.stringify(defaultAdmin))
   return defaultAdmin
 }
 
 export function getCurrentUser() {
-  const saved = localStorage.getItem("workly_user")
+  const saved = localStorage.getItem("dayflow_user")
   return saved ? JSON.parse(saved) : null
 }
 
 export function logoutUser() {
-  localStorage.removeItem("workly_user")
-  localStorage.removeItem("workly_token")
+  localStorage.removeItem("dayflow_user")
+  localStorage.removeItem("dayflow_token")
 }

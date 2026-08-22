@@ -20,11 +20,11 @@ export default function Navbar({ currentPage, onNavigate, checkedIn, currentUser
       {/* Logo */}
       <div className="flex items-center gap-2 pr-4 mr-2 border-r border-base-border h-full">
         <div className="w-7 h-7 rounded-md bg-purple-600 flex items-center justify-center font-display font-bold text-sm text-white shadow-sm">
-          W
+          D
         </div>
         <div className="flex flex-col">
           <span className="font-display font-bold text-base tracking-tight leading-none text-ink-primary">
-            Workly
+            DayFlow
           </span>
           {currentUser?.company && (
             <span className="text-[10px] text-ink-secondary leading-tight truncate max-w-[120px]">

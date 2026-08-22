@@ -20,7 +20,7 @@ export default function Employees({ onSelectEmployee, currentUser }) {
   })
 
   const previewLoginId = generateLoginId(
-    currentUser?.company || "Workly",
+    currentUser?.company || "DayFlow",
     newEmpData.name || "New Employee",
     new Date().getFullYear(),
     employeeList.length + 1
@@ -41,17 +41,17 @@ export default function Employees({ onSelectEmployee, currentUser }) {
       department: newEmpData.department,
       status: newEmpData.status,
       loginId: previewLoginId,
-      company: currentUser?.company || "Workly Technologies",
+      company: currentUser?.company || "DayFlow Technologies",
       manager: newEmpData.manager,
       location: newEmpData.location,
       resume: {
-        about: `${newEmpData.name} recently joined the ${newEmpData.department} team at ${currentUser?.company || "Workly"}.`,
+        about: `${newEmpData.name} recently joined the ${newEmpData.department} team at ${currentUser?.company || "DayFlow"}.`,
         whatILoveAboutMyJob: "Collaborating with high-impact teams.",
         skills: ["Communication", "Problem Solving"],
         certifications: [],
       },
       privateInfo: {
-        personalEmail: `${newEmpData.name.toLowerCase().replace(/\s+/g, ".")}@workly.com`,
+        personalEmail: `${newEmpData.name.toLowerCase().replace(/\s+/g, ".")}@dayflow.com`,
         phone: "+91 98000 00000",
         address: "Bengaluru, KA, India",
         dateOfBirth: "01 Jan 1998",

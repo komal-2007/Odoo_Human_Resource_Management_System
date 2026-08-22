@@ -54,7 +54,7 @@ export default function App() {
     const newRole = currentUser.role === "admin" ? "employee" : "admin"
     const updatedUser = { ...currentUser, role: newRole }
     setCurrentUser(updatedUser)
-    localStorage.setItem("workly_user", JSON.stringify(updatedUser))
+    localStorage.setItem("dayflow_user", JSON.stringify(updatedUser))
   }
 
   // If user is not logged in, show the Auth screens (Sign In or Sign Up)

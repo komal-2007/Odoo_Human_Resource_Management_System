@@ -3,13 +3,13 @@
  * Format: [CompanyPrefix (2-3 chars)] + [First 2 letters of First & Last name] + [Year] + [4-digit Serial]
  *
  * Example:
- * Company: "Workly", Name: "John Doe", Year: 2026, Serial: 1
- * Output: "WOJODO20260001"
+ * Company: "DayFlow", Name: "John Doe", Year: 2026, Serial: 1
+ * Output: "DFJODO20260001"
  */
-export function generateLoginId(companyName = "Workly", fullName = "Admin User", year = new Date().getFullYear(), serialNumber = 1) {
-  // 1. Company Prefix: Take first 2 alphanumeric letters in uppercase (e.g., Workly -> WO)
-  const cleanCompany = (companyName || "WO").trim().replace(/[^a-zA-Z]/g, "").toUpperCase()
-  const companyPrefix = cleanCompany.length >= 2 ? cleanCompany.slice(0, 2) : "WO"
+export function generateLoginId(companyName = "DayFlow", fullName = "Admin User", year = new Date().getFullYear(), serialNumber = 1) {
+  // 1. Company Prefix: Take first 2 alphanumeric letters in uppercase (e.g., DayFlow -> DF)
+  const cleanCompany = (companyName || "DF").trim().replace(/[^a-zA-Z]/g, "").toUpperCase()
+  const companyPrefix = cleanCompany.length >= 2 ? cleanCompany.slice(0, 2) : "DF"
 
   // 2. Name Letters: First 2 letters of first name + First 2 letters of last name
   const nameParts = (fullName || "Admin User").trim().split(/\s+/).filter(Boolean)

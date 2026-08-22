@@ -40,10 +40,10 @@ export default function SignIn({ onSignInSuccess, onNavigateToSignUp }) {
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-base-sidebar border border-base-border mb-2">
             <div className="w-6 h-6 rounded-md bg-purple-600 flex items-center justify-center font-display font-bold text-xs text-white">
-              W
+              D
             </div>
             <span className="font-display font-bold text-base tracking-tight text-ink-primary">
-              Workly
+              DayFlow
             </span>
           </div>
           <h1 className="font-display font-bold text-2xl tracking-tight text-ink-primary">
@@ -56,7 +56,7 @@ export default function SignIn({ onSignInSuccess, onNavigateToSignUp }) {
 
         {error && (
           <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
-            <span>??</span>
+            <span>‚ö†Ô∏è</span>
             <span>{error}</span>
           </div>
         )}
@@ -72,7 +72,7 @@ export default function SignIn({ onSignInSuccess, onNavigateToSignUp }) {
               required
               value={loginId}
               onChange={(e) => setLoginId(e.target.value)}
-              placeholder="e.g. WOADUS20260001 or admin@workly.com"
+              placeholder="e.g. DFADUS20260001 or admin@dayflow.com"
               className="w-full bg-base-sidebar border border-base-border rounded-lg px-3.5 py-2 text-sm text-ink-primary placeholder:text-ink-secondary/60 focus:outline-none focus:border-purple-500 transition-colors"
             />
           </div>
@@ -87,7 +87,7 @@ export default function SignIn({ onSignInSuccess, onNavigateToSignUp }) {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="ïïïïïïïï"
+              placeholder="‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢"
               className="w-full bg-base-sidebar border border-base-border rounded-lg px-3.5 py-2 text-sm text-ink-primary placeholder:text-ink-secondary/60 focus:outline-none focus:border-purple-500 transition-colors"
             />
           </div>
