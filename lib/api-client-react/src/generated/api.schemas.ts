@@ -59,6 +59,47 @@ export interface CreateEmployeeRequest {
   dateOfJoining: string;
 }
 
+export interface UpdateMyEmployeeProfileRequest {
+  /**
+     * @minLength 1
+     * @maxLength 80
+     */
+  firstName?: string;
+  /**
+     * @minLength 1
+     * @maxLength 80
+     */
+  lastName?: string;
+  /** @maxLength 30 */
+  phone?: string;
+}
+
+export interface UpdateEmployeeRequest {
+  /** Valid email address */
+  email?: string;
+  /**
+     * @minLength 1
+     * @maxLength 80
+     */
+  firstName?: string;
+  /**
+     * @minLength 1
+     * @maxLength 80
+     */
+  lastName?: string;
+  /** @maxLength 30 */
+  phone?: string;
+  /** @maxLength 100 */
+  department?: string;
+  /** @maxLength 100 */
+  jobTitle?: string;
+  /**
+     * @minLength 1
+     * @maxLength 40
+     */
+  employeeCode?: string;
+}
+
 export type UserResponseRole = typeof UserResponseRole[keyof typeof UserResponseRole];
 
 
@@ -74,6 +115,23 @@ export interface UserResponse {
   email: string;
   role: UserResponseRole;
   mustChangePassword?: boolean;
+}
+
+export interface EmployeeProfile {
+  id: string;
+  userId: string;
+  employeeCode: string;
+  firstName: string;
+  lastName: string;
+  phone?: string | null;
+  department?: string | null;
+  jobTitle?: string | null;
+  dateOfJoining?: string | null;
+  joiningYear?: number | null;
+  joiningSerial?: number | null;
+  createdAt: string;
+  updatedAt: string;
+  user: UserResponse;
 }
 
 export interface AuthResponse {
@@ -181,4 +239,3 @@ export type ListAttendanceParams = {
 employeeId?: string;
 date?: string;
 };
-

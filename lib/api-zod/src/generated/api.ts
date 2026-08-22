@@ -97,6 +97,164 @@ export const CreateEmployeeResponse = zod.void()
 
 
 /**
+ * Employee-authenticated. Returns the current user's employee profile without authentication secrets.
+ * @summary Get my employee profile
+ */
+export const GetMyEmployeeProfileResponse = zod.object({
+  "id": zod.string(),
+  "userId": zod.string(),
+  "employeeCode": zod.string(),
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "phone": zod.string().nullish(),
+  "department": zod.string().nullish(),
+  "jobTitle": zod.string().nullish(),
+  "dateOfJoining": zod.coerce.date().nullish(),
+  "joiningYear": zod.number().nullish(),
+  "joiningSerial": zod.number().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "user": zod.object({
+  "id": zod.string(),
+  "loginId": zod.string(),
+  "email": zod.string().describe('Valid email address'),
+  "role": zod.enum(['ADMIN', 'EMPLOYEE']),
+  "mustChangePassword": zod.boolean().optional()
+})
+})
+
+
+/**
+ * Employee-authenticated. Updates only first name, last name, and phone. Login ID, role, and password fields cannot be changed.
+ * @summary Update my employee profile
+ */
+export const updateMyEmployeeProfileBodyFirstNameMax = 80;
+
+export const updateMyEmployeeProfileBodyLastNameMax = 80;
+
+export const updateMyEmployeeProfileBodyPhoneMax = 30;
+
+
+
+export const UpdateMyEmployeeProfileBody = zod.object({
+  "firstName": zod.string().min(1).max(updateMyEmployeeProfileBodyFirstNameMax).optional(),
+  "lastName": zod.string().min(1).max(updateMyEmployeeProfileBodyLastNameMax).optional(),
+  "phone": zod.string().max(updateMyEmployeeProfileBodyPhoneMax).optional()
+})
+
+export const UpdateMyEmployeeProfileResponse = zod.object({
+  "id": zod.string(),
+  "userId": zod.string(),
+  "employeeCode": zod.string(),
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "phone": zod.string().nullish(),
+  "department": zod.string().nullish(),
+  "jobTitle": zod.string().nullish(),
+  "dateOfJoining": zod.coerce.date().nullish(),
+  "joiningYear": zod.number().nullish(),
+  "joiningSerial": zod.number().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "user": zod.object({
+  "id": zod.string(),
+  "loginId": zod.string(),
+  "email": zod.string().describe('Valid email address'),
+  "role": zod.enum(['ADMIN', 'EMPLOYEE']),
+  "mustChangePassword": zod.boolean().optional()
+})
+})
+
+
+/**
+ * Admin/HR-authenticated. Returns the requested employee profile without authentication secrets.
+ * @summary Get an employee profile
+ */
+export const GetEmployeeParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetEmployeeResponse = zod.object({
+  "id": zod.string(),
+  "userId": zod.string(),
+  "employeeCode": zod.string(),
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "phone": zod.string().nullish(),
+  "department": zod.string().nullish(),
+  "jobTitle": zod.string().nullish(),
+  "dateOfJoining": zod.coerce.date().nullish(),
+  "joiningYear": zod.number().nullish(),
+  "joiningSerial": zod.number().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "user": zod.object({
+  "id": zod.string(),
+  "loginId": zod.string(),
+  "email": zod.string().describe('Valid email address'),
+  "role": zod.enum(['ADMIN', 'EMPLOYEE']),
+  "mustChangePassword": zod.boolean().optional()
+})
+})
+
+
+/**
+ * Admin/HR-authenticated. Updates existing profile fields. Login ID and password authentication fields are not changed.
+ * @summary Update an employee profile
+ */
+export const UpdateEmployeeParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const updateEmployeeBodyFirstNameMax = 80;
+
+export const updateEmployeeBodyLastNameMax = 80;
+
+export const updateEmployeeBodyPhoneMax = 30;
+
+export const updateEmployeeBodyDepartmentMax = 100;
+
+export const updateEmployeeBodyJobTitleMax = 100;
+
+export const updateEmployeeBodyEmployeeCodeMax = 40;
+
+
+
+export const UpdateEmployeeBody = zod.object({
+  "email": zod.string().optional().describe('Valid email address'),
+  "firstName": zod.string().min(1).max(updateEmployeeBodyFirstNameMax).optional(),
+  "lastName": zod.string().min(1).max(updateEmployeeBodyLastNameMax).optional(),
+  "phone": zod.string().max(updateEmployeeBodyPhoneMax).optional(),
+  "department": zod.string().max(updateEmployeeBodyDepartmentMax).optional(),
+  "jobTitle": zod.string().max(updateEmployeeBodyJobTitleMax).optional(),
+  "employeeCode": zod.string().min(1).max(updateEmployeeBodyEmployeeCodeMax).optional()
+})
+
+export const UpdateEmployeeResponse = zod.object({
+  "id": zod.string(),
+  "userId": zod.string(),
+  "employeeCode": zod.string(),
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "phone": zod.string().nullish(),
+  "department": zod.string().nullish(),
+  "jobTitle": zod.string().nullish(),
+  "dateOfJoining": zod.coerce.date().nullish(),
+  "joiningYear": zod.number().nullish(),
+  "joiningSerial": zod.number().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "user": zod.object({
+  "id": zod.string(),
+  "loginId": zod.string(),
+  "email": zod.string().describe('Valid email address'),
+  "role": zod.enum(['ADMIN', 'EMPLOYEE']),
+  "mustChangePassword": zod.boolean().optional()
+})
+})
+
+
+/**
  * Employee-authenticated. Creates a pending leave request for the current user's employee profile.
  * @summary Submit a leave request
  */
@@ -335,5 +493,3 @@ export const ListAttendanceResponseItem = zod.object({
   "updatedAt": zod.coerce.date()
 })
 export const ListAttendanceResponse = zod.array(ListAttendanceResponseItem)
-
-

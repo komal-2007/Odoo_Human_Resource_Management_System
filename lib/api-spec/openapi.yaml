@@ -130,6 +130,118 @@ paths:
         "403":
           description: Admin/HR access required
 
+  /employees/me:
+    get:
+      operationId: getMyEmployeeProfile
+      tags: [employees]
+      summary: Get my employee profile
+      description: Employee-authenticated. Returns the current user's employee profile without authentication secrets.
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: Current employee profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeeProfile"
+        "401":
+          description: Authentication required
+        "403":
+          description: Employee access required
+        "404":
+          description: Employee profile not found
+
+    patch:
+      operationId: updateMyEmployeeProfile
+      tags: [employees]
+      summary: Update my employee profile
+      description: Employee-authenticated. Updates only first name, last name, and phone. Login ID, role, and password fields cannot be changed.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMyEmployeeProfileRequest"
+      responses:
+        "200":
+          description: Current employee profile updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeeProfile"
+        "400":
+          description: Invalid profile details
+        "401":
+          description: Authentication required
+        "403":
+          description: Employee access required
+        "404":
+          description: Employee profile not found
+
+  /employees/{id}:
+    get:
+      operationId: getEmployee
+      tags: [employees]
+      summary: Get an employee profile
+      description: Admin/HR-authenticated. Returns the requested employee profile without authentication secrets.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Employee profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeeProfile"
+        "401":
+          description: Authentication required
+        "403":
+          description: Admin/HR access required
+        "404":
+          description: Employee profile not found
+
+    patch:
+      operationId: updateEmployee
+      tags: [employees]
+      summary: Update an employee profile
+      description: Admin/HR-authenticated. Updates existing profile fields. Login ID and password authentication fields are not changed.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEmployeeRequest"
+      responses:
+        "200":
+          description: Employee profile updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeeProfile"
+        "400":
+          description: Invalid profile details
+        "401":
+          description: Authentication required
+        "403":
+          description: Admin/HR access required
+        "404":
+          description: Employee profile not found
+        "409":
+          description: Email or employee code already exists
+
   /leave-requests:
     post:
       operationId: createLeaveRequest
@@ -404,6 +516,53 @@ components:
         department: { type: string, maxLength: 100 }
         jobTitle: { type: string, maxLength: 100 }
         dateOfJoining: { type: string, format: date }
+
+    UpdateMyEmployeeProfileRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        firstName: { type: string, minLength: 1, maxLength: 80 }
+        lastName: { type: string, minLength: 1, maxLength: 80 }
+        phone: { type: string, maxLength: 30 }
+
+    UpdateEmployeeRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        email: { type: string, description: Valid email address }
+        firstName: { type: string, minLength: 1, maxLength: 80 }
+        lastName: { type: string, minLength: 1, maxLength: 80 }
+        phone: { type: string, maxLength: 30 }
+        department: { type: string, maxLength: 100 }
+        jobTitle: { type: string, maxLength: 100 }
+        employeeCode: { type: string, minLength: 1, maxLength: 40 }
+
+    EmployeeProfile:
+      type: object
+      required:
+        - id
+        - userId
+        - employeeCode
+        - firstName
+        - lastName
+        - createdAt
+        - updatedAt
+        - user
+      properties:
+        id: { type: string }
+        userId: { type: string }
+        employeeCode: { type: string }
+        firstName: { type: string }
+        lastName: { type: string }
+        phone: { type: string, nullable: true }
+        department: { type: string, nullable: true }
+        jobTitle: { type: string, nullable: true }
+        dateOfJoining: { type: string, format: date-time, nullable: true }
+        joiningYear: { type: number, nullable: true }
+        joiningSerial: { type: number, nullable: true }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        user: { $ref: "#/components/schemas/UserResponse" }
 
     UserResponse:
       type: object

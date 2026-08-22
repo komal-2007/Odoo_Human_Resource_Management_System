@@ -25,12 +25,15 @@ import type {
   ChangePasswordRequest,
   CreateEmployeeRequest,
   CreateLeaveRequest,
+  EmployeeProfile,
   GetMyAttendanceParams,
   HealthStatus,
   LeaveDecisionRequest,
   LeaveRequest,
   ListAttendanceParams,
   LoginRequest,
+  UpdateEmployeeRequest,
+  UpdateMyEmployeeProfileRequest,
   UserResponse
 } from './api.schemas';
 
@@ -480,6 +483,307 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getCreateEmployeeMutationOptions(options));
+    }
+
+export const getGetMyEmployeeProfileUrl = () => {
+
+
+
+
+  return `/api/employees/me`
+}
+
+/**
+ * Employee-authenticated. Returns the current user's employee profile without authentication secrets.
+ * @summary Get my employee profile
+ */
+export const getMyEmployeeProfile = async ( options?: Parameters<typeof customFetch>[1]): Promise<EmployeeProfile> => {
+
+  return customFetch<EmployeeProfile>(getGetMyEmployeeProfileUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetMyEmployeeProfileQueryKey = () => {
+    return [
+    `/api/employees/me`
+    ] as const;
+    }
+
+
+export const getGetMyEmployeeProfileQueryOptions = <TData = Awaited<ReturnType<typeof getMyEmployeeProfile>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMyEmployeeProfile>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMyEmployeeProfileQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMyEmployeeProfile>>> = ({ signal }) => getMyEmployeeProfile({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMyEmployeeProfile>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetMyEmployeeProfileQueryResult = NonNullable<Awaited<ReturnType<typeof getMyEmployeeProfile>>>
+export type GetMyEmployeeProfileQueryError = ErrorType<void>
+
+
+/**
+ * @summary Get my employee profile
+ */
+
+export function useGetMyEmployeeProfile<TData = Awaited<ReturnType<typeof getMyEmployeeProfile>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMyEmployeeProfile>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetMyEmployeeProfileQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateMyEmployeeProfileUrl = () => {
+
+
+
+
+  return `/api/employees/me`
+}
+
+/**
+ * Employee-authenticated. Updates only first name, last name, and phone. Login ID, role, and password fields cannot be changed.
+ * @summary Update my employee profile
+ */
+export const updateMyEmployeeProfile = async (updateMyEmployeeProfileRequest: UpdateMyEmployeeProfileRequest, options?: Parameters<typeof customFetch>[1]): Promise<EmployeeProfile> => {
+
+  return customFetch<EmployeeProfile>(getUpdateMyEmployeeProfileUrl(),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateMyEmployeeProfileRequest)
+  }
+);}
+
+
+
+
+
+export const getUpdateMyEmployeeProfileMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMyEmployeeProfile>>, TError,{data: BodyType<UpdateMyEmployeeProfileRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateMyEmployeeProfile>>, TError,{data: BodyType<UpdateMyEmployeeProfileRequest>}, TContext> => {
+
+const mutationKey = ['updateMyEmployeeProfile'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateMyEmployeeProfile>>, {data: BodyType<UpdateMyEmployeeProfileRequest>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  updateMyEmployeeProfile(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateMyEmployeeProfileMutationResult = NonNullable<Awaited<ReturnType<typeof updateMyEmployeeProfile>>>
+    export type UpdateMyEmployeeProfileMutationBody = BodyType<UpdateMyEmployeeProfileRequest>
+    export type UpdateMyEmployeeProfileMutationError = ErrorType<void>
+
+    /**
+ * @summary Update my employee profile
+ */
+export const useUpdateMyEmployeeProfile = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMyEmployeeProfile>>, TError,{data: BodyType<UpdateMyEmployeeProfileRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateMyEmployeeProfile>>,
+        TError,
+        {data: BodyType<UpdateMyEmployeeProfileRequest>},
+        TContext
+      > => {
+      return useMutation(getUpdateMyEmployeeProfileMutationOptions(options));
+    }
+
+export const getGetEmployeeUrl = (id: string,) => {
+
+
+
+
+  return `/api/employees/${id}`
+}
+
+/**
+ * Admin/HR-authenticated. Returns the requested employee profile without authentication secrets.
+ * @summary Get an employee profile
+ */
+export const getEmployee = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<EmployeeProfile> => {
+
+  return customFetch<EmployeeProfile>(getGetEmployeeUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetEmployeeQueryKey = (id: string,) => {
+    return [
+    `/api/employees/${id}`
+    ] as const;
+    }
+
+
+export const getGetEmployeeQueryOptions = <TData = Awaited<ReturnType<typeof getEmployee>>, TError = ErrorType<void>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getEmployee>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetEmployeeQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getEmployee>>> = ({ signal }) => getEmployee(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getEmployee>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetEmployeeQueryResult = NonNullable<Awaited<ReturnType<typeof getEmployee>>>
+export type GetEmployeeQueryError = ErrorType<void>
+
+
+/**
+ * @summary Get an employee profile
+ */
+
+export function useGetEmployee<TData = Awaited<ReturnType<typeof getEmployee>>, TError = ErrorType<void>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getEmployee>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetEmployeeQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateEmployeeUrl = (id: string,) => {
+
+
+
+
+  return `/api/employees/${id}`
+}
+
+/**
+ * Admin/HR-authenticated. Updates existing profile fields. Login ID and password authentication fields are not changed.
+ * @summary Update an employee profile
+ */
+export const updateEmployee = async (id: string,
+    updateEmployeeRequest: UpdateEmployeeRequest, options?: Parameters<typeof customFetch>[1]): Promise<EmployeeProfile> => {
+
+  return customFetch<EmployeeProfile>(getUpdateEmployeeUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateEmployeeRequest)
+  }
+);}
+
+
+
+
+
+export const getUpdateEmployeeMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateEmployee>>, TError,{id: string;data: BodyType<UpdateEmployeeRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateEmployee>>, TError,{id: string;data: BodyType<UpdateEmployeeRequest>}, TContext> => {
+
+const mutationKey = ['updateEmployee'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateEmployee>>, {id: string;data: BodyType<UpdateEmployeeRequest>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateEmployee(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateEmployeeMutationResult = NonNullable<Awaited<ReturnType<typeof updateEmployee>>>
+    export type UpdateEmployeeMutationBody = BodyType<UpdateEmployeeRequest>
+    export type UpdateEmployeeMutationError = ErrorType<void>
+
+    /**
+ * @summary Update an employee profile
+ */
+export const useUpdateEmployee = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateEmployee>>, TError,{id: string;data: BodyType<UpdateEmployeeRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateEmployee>>,
+        TError,
+        {id: string;data: BodyType<UpdateEmployeeRequest>},
+        TContext
+      > => {
+      return useMutation(getUpdateEmployeeMutationOptions(options));
     }
 
 export const getCreateLeaveRequestUrl = () => {
