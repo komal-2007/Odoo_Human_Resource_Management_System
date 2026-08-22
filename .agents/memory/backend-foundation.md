@@ -14,3 +14,9 @@ Authentication is Admin-created only: employees do not self-register, and JWT pa
 **Why:** HR controls account provisioning and employees must be restricted to their own protected data.
 
 **How to apply:** Use `requireAuth` for protected routes and `requireRole("ADMIN")` for HR management routes; never include password hashes in responses.
+
+Employee Login IDs use the Workly-derived `WO` prefix, two uppercase letters from each name, the UTC joining year, and a five-digit serial that restarts per year; joining date/year/serial are persisted.
+
+**Why:** HRMS requires IDs such as `WOODDO202300001` to be deterministic and sequential rather than random.
+
+**How to apply:** Require `dateOfJoining` on employee creation and allocate the next serial inside the Prisma transaction; preserve the explicit `COMPANY_NAME` environment setting.

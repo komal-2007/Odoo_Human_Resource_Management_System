@@ -139,7 +139,7 @@ components:
         newPassword: { type: string, minLength: 8 }
     CreateEmployeeRequest:
       type: object
-      required: [email, firstName, lastName, employeeCode]
+      required: [email, firstName, lastName, employeeCode, dateOfJoining]
       properties:
         email: { type: string, description: Valid email address }
         firstName: { type: string, minLength: 1, maxLength: 80 }
@@ -148,6 +148,7 @@ components:
         phone: { type: string, maxLength: 30 }
         department: { type: string, maxLength: 100 }
         jobTitle: { type: string, maxLength: 100 }
+        dateOfJoining: { type: string, format: date }
     UserResponse:
       type: object
       required: [id, loginId, email, role]

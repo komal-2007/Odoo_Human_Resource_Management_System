@@ -48,12 +48,15 @@ model EmployeeProfile {
   department     String?
   jobTitle       String?
   dateOfJoining  DateTime?
+  joiningYear    Int?
+  joiningSerial  Int?
   user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   attendance     AttendanceRecord[]
   leaveRequests  LeaveRequest[]
   payrollRecords PayrollRecord[]
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
+  @@unique([joiningYear, joiningSerial])
 }
 
 model AttendanceRecord {

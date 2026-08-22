@@ -15,17 +15,75 @@ const createEmployeeSchema = z.object({
   phone: z.string().max(30).optional(),
   department: z.string().max(100).optional(),
   jobTitle: z.string().max(100).optional(),
+  dateOfJoining: z.string().date(),
 });
-
-async function uniqueLoginId(): Promise<string> {
-  for (;;) {
-    const loginId = `DF-${randomBytes(4).toString("hex").toUpperCase()}`;
-    if (!(await prisma.user.findUnique({ where: { loginId } }))) return loginId;
-  }
-}
 
 function initialPassword(): string {
   return `Df!${randomBytes(9).toString("base64url")}`;
+}
+
+function companyPrefix(): string {
+  const letters = (process.env.COMPANY_NAME ?? "Workly")
+    .replace(/[^a-z]/gi, "")
+    .toUpperCase();
+  if (letters.length < 2) throw new Error("COMPANY_NAME must contain at least two letters.");
+  return letters.slice(0, 2);
+}
+
+function namePart(value: string): string {
+  const letters = value.replace(/[^a-z]/gi, "").toUpperCase();
+  if (letters.length < 2) throw new Error("Names must contain at least two letters.");
+  return letters.slice(0, 2);
+}
+
+function loginIdFor(firstName: string, lastName: string, year: number, serial: number): string {
+  return `${companyPrefix()}${namePart(firstName)}${namePart(lastName)}${year}${String(serial).padStart(5, "0")}`;
+}
+
+async function createEmployeeWithSerial(
+  input: z.infer<typeof createEmployeeSchema>,
+  password: string,
+) {
+  const joiningDate = new Date(`${input.dateOfJoining}T00:00:00.000Z`);
+  const joiningYear = joiningDate.getUTCFullYear();
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      return await prisma.$transaction(async (transaction) => {
+        const latest = await transaction.employeeProfile.findFirst({
+          where: { joiningYear },
+          orderBy: { joiningSerial: "desc" },
+          select: { joiningSerial: true },
+        });
+        const joiningSerial = (latest?.joiningSerial ?? 0) + 1;
+        return transaction.user.create({
+          data: {
+            email: input.email,
+            loginId: loginIdFor(input.firstName, input.lastName, joiningYear, joiningSerial),
+            passwordHash: await hashPassword(password),
+            role: "EMPLOYEE",
+            employee: {
+              create: {
+                employeeCode: input.employeeCode,
+                firstName: input.firstName,
+                lastName: input.lastName,
+                phone: input.phone,
+                department: input.department,
+                jobTitle: input.jobTitle,
+                dateOfJoining: joiningDate,
+                joiningYear,
+                joiningSerial,
+              },
+            },
+          },
+          include: { employee: true },
+        });
+      });
+    } catch (error) {
+      if (attempt === 2) throw error;
+    }
+  }
+  throw new Error("Could not allocate a unique employee Login ID.");
 }
 
 router.use(requireAuth, requireRole("ADMIN"));
@@ -46,25 +104,7 @@ router.post("/employees", async (req, res, next) => {
   try {
     const input = createEmployeeSchema.parse(req.body);
     const password = initialPassword();
-    const user = await prisma.user.create({
-      data: {
-        email: input.email,
-        loginId: await uniqueLoginId(),
-        passwordHash: await hashPassword(password),
-        role: "EMPLOYEE",
-        employee: {
-          create: {
-            employeeCode: input.employeeCode,
-            firstName: input.firstName,
-            lastName: input.lastName,
-            phone: input.phone,
-            department: input.department,
-            jobTitle: input.jobTitle,
-          },
-        },
-      },
-      include: { employee: true },
-    });
+    const user = await createEmployeeWithSerial(input, password);
     res.status(201).json({
       employee: user.employee,
       user: publicUser(user),

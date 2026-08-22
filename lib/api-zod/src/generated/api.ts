@@ -89,7 +89,8 @@ export const CreateEmployeeBody = zod.object({
   "employeeCode": zod.string().min(1).max(createEmployeeBodyEmployeeCodeMax),
   "phone": zod.string().max(createEmployeeBodyPhoneMax).optional(),
   "department": zod.string().max(createEmployeeBodyDepartmentMax).optional(),
-  "jobTitle": zod.string().max(createEmployeeBodyJobTitleMax).optional()
+  "jobTitle": zod.string().max(createEmployeeBodyJobTitleMax).optional(),
+  "dateOfJoining": zod.coerce.date()
 })
 
 export const CreateEmployeeResponse = zod.void()

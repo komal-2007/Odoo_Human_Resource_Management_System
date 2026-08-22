@@ -56,6 +56,7 @@ export interface CreateEmployeeRequest {
   department?: string;
   /** @maxLength 100 */
   jobTitle?: string;
+  dateOfJoining: string;
 }
 
 export type UserResponseRole = typeof UserResponseRole[keyof typeof UserResponseRole];
